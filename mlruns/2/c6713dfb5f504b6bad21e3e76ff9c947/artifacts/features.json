@@ -1,0 +1,22 @@
+[
+    "SOX_Intraday_Force",
+    "SOX_Overnight_Gap",
+    "Sector_Relative_Strength_5d",
+    "day_of_week",
+    "is_holiday_jp",
+    "month",
+    "nvda_adj_close_return_lag1",
+    "nvda_adj_close_return_lag2",
+    "semi_adj_close_return_lag1",
+    "semi_adj_close_return_lag2",
+    "sox_adj_close_return_lag1",
+    "sox_adj_close_return_lag2",
+    "tsm_adj_close_return_lag1",
+    "tsm_adj_close_return_lag2",
+    "vxn_adj_close",
+    "vxn_adj_close_return_lag1",
+    "vxn_adj_close_return_lag2",
+    "vxn_close",
+    "vxn_high",
+    "vxn_low"
+]

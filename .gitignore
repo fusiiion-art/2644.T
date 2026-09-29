@@ -1,0 +1,6 @@
+/.agent
+/.pytest_cache
+/.venv
+/logs
+/mlflow.db
+/__pycache__
