@@ -1,0 +1,12 @@
+# 分配: record=決算日, amount=1口あたり円(Global X公表の100口あたり税引前÷100, 分割調整後)
+# TODO: 2022-10, 2024-04, 2024-10 は Global X の分配金履歴から要転記（推測で埋めない）。
+#       転記後、合計が設定来 7,600円/100口 と一致するか検算する。
+- {date: "2024-10-09", type: split, ratio: 2.0, note: "1:2, 効力発生10/11, 権利落ち10/09"}
+- {record: "2022-04-24", type: dividend, amount: 8.50}
+- {record: "2023-04-24", type: dividend, amount: 9.50}
+- {record: "2023-10-24", type: dividend, amount: 3.50}
+- {record: "2025-04-24", type: dividend, amount: 7.50}
+- {record: "2025-10-24", type: dividend, amount: 10.00}
+- {record: "2026-04-24", type: dividend, amount: 12.00}
+- {date: "2025-10-24", type: data_defect, source: yfinance, issue: "OHLC空", action: "jquantsで補完"}
+- {date: "2025-05-07", type: market_rule, issue: "ETF(1口)呼値テーブル適用開始"}

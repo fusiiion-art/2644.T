@@ -1,0 +1,10 @@
+symbol: "2644.T"
+jq_code: "26440"
+capital_jpy: 1500000
+data:
+  start: "2021-09-28"
+  yfinance: {auto_adjust: false, actions: true, repair: false}
+  overlap_days: 15
+  jump_bounds: [0.55, 1.8]
+ops:
+  exdiv_guard_days: 3

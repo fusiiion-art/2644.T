@@ -1,0 +1,2 @@
+Run_Name,Trial_Number,Val_Acc_Best,Status,dropout,weight_decay,lr,n_features_to_select
+daily_2644t_risk_on_ridge,2322,,PRUNED,0.16271848089897464,0.0006391871044181489,0.006175039580601558,4
