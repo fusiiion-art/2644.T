@@ -1,0 +1,487 @@
+{
+  "bonferroni_alpha": 0.005555555555555556,
+  "n_tests_total": 28,
+  "n_primary": 9,
+  "decision": "フェーズ3へ進む（有意: sox_ret_overnight×fwd_oc_1）",
+  "unmeasured": [
+    "日経225先物の夜間変化（データ未取得）"
+  ],
+  "table": [
+    {
+      "role": "primary",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oc_1",
+      "ic": -0.08621073750802408,
+      "t_hac": -2.9201404130011883,
+      "p_hac": 0.00349873706640369,
+      "n": 1163,
+      "p_naive": 0.003257376754781225,
+      "ic_first_half": -0.07451611813215886,
+      "ic_second_half": -0.10310823016153721,
+      "period": [
+        "2021-09-30",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": true
+    },
+    {
+      "role": "primary",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oc_5",
+      "ic": -0.050804917202413244,
+      "t_hac": -1.7005759831586804,
+      "p_hac": 0.0890226371788303,
+      "n": 1158,
+      "p_naive": 0.08396855805587473,
+      "ic_first_half": -0.03735090922155818,
+      "ic_second_half": -0.0645837999463754,
+      "period": [
+        "2021-09-30",
+        "2026-06-29"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oc_20",
+      "ic": -0.019173228652435304,
+      "t_hac": -0.7787596880536873,
+      "p_hac": 0.4361212883325467,
+      "n": 1143,
+      "p_naive": 0.5172668505930366,
+      "ic_first_half": -0.022909239029131178,
+      "ic_second_half": -0.014442190206951358,
+      "period": [
+        "2021-09-30",
+        "2026-06-08"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_5",
+      "label": "fwd_oc_1",
+      "ic": -0.03570795026510872,
+      "t_hac": -1.2110519213090911,
+      "p_hac": 0.22587550616692265,
+      "n": 1157,
+      "p_naive": 0.2248739628041611,
+      "ic_first_half": -0.009609728558563171,
+      "ic_second_half": -0.05836786694695927,
+      "period": [
+        "2021-10-06",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_5",
+      "label": "fwd_oc_5",
+      "ic": -0.04182712427160446,
+      "t_hac": -0.8705429482321272,
+      "p_hac": 0.38400375912849416,
+      "n": 1152,
+      "p_naive": 0.15597501722444262,
+      "ic_first_half": 0.002324080136335041,
+      "ic_second_half": -0.07929000691027548,
+      "period": [
+        "2021-10-06",
+        "2026-06-29"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_5",
+      "label": "fwd_oc_20",
+      "ic": -0.005881443957429661,
+      "t_hac": -0.11923026140451616,
+      "p_hac": 0.9050929325125165,
+      "n": 1137,
+      "p_naive": 0.8429648567114041,
+      "ic_first_half": -0.019856003320572743,
+      "ic_second_half": -0.0003323428080237931,
+      "period": [
+        "2021-10-06",
+        "2026-06-08"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_20",
+      "label": "fwd_oc_1",
+      "ic": -0.010313580444868967,
+      "t_hac": -0.38499362168969914,
+      "p_hac": 0.7002421411591759,
+      "n": 1142,
+      "p_naive": 0.7277204338403246,
+      "ic_first_half": -0.02713600738947563,
+      "ic_second_half": 0.0007852298535594508,
+      "period": [
+        "2021-10-27",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_20",
+      "label": "fwd_oc_5",
+      "ic": -0.03458424621587725,
+      "t_hac": -0.743884953608784,
+      "p_hac": 0.4569460788860471,
+      "n": 1137,
+      "p_naive": 0.24392713846351688,
+      "ic_first_half": -0.0332241271231752,
+      "ic_second_half": -0.03801182451927588,
+      "period": [
+        "2021-10-27",
+        "2026-06-29"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "primary",
+      "var": "semi_mom_20",
+      "label": "fwd_oc_20",
+      "ic": 0.010121151654844084,
+      "t_hac": 0.12246332838212053,
+      "p_hac": 0.9025320870579601,
+      "n": 1122,
+      "p_naive": 0.7348722090840373,
+      "ic_first_half": -0.044186381899256784,
+      "ic_second_half": 0.05101035746300304,
+      "period": [
+        "2021-10-27",
+        "2026-06-08"
+      ],
+      "significant_bonferroni": false
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oo_1",
+      "ic": -0.1018686525441075,
+      "t_hac": -3.299901568063173,
+      "p_hac": 0.0009671874514429746,
+      "n": 1161,
+      "p_naive": 0.0005083372950576052,
+      "ic_first_half": -0.06123348065080756,
+      "ic_second_half": -0.1413531084081017,
+      "period": [
+        "2021-09-30",
+        "2026-07-02"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oo_5",
+      "ic": -0.03541695121746063,
+      "t_hac": -1.1955662062277936,
+      "p_hac": 0.23186588565079713,
+      "n": 1157,
+      "p_naive": 0.22867750422424435,
+      "ic_first_half": -0.020589654382564587,
+      "ic_second_half": -0.04693235067684035,
+      "period": [
+        "2021-09-30",
+        "2026-06-26"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight",
+      "label": "fwd_oo_20",
+      "ic": -0.007475019043053638,
+      "t_hac": -0.30141259421972433,
+      "p_hac": 0.7630998918098302,
+      "n": 1142,
+      "p_naive": 0.8007830069528981,
+      "ic_first_half": -0.012047377928119107,
+      "ic_second_half": -0.002751870940910101,
+      "period": [
+        "2021-09-30",
+        "2026-06-05"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight",
+      "label": "gap",
+      "ic": 0.7715761816476302,
+      "t_hac": 42.952273475999014,
+      "p_hac": 0.0,
+      "n": 1162,
+      "p_naive": 3.987423544760582e-230,
+      "ic_first_half": 0.7911318948494561,
+      "ic_second_half": 0.7559654209796797,
+      "period": [
+        "2021-09-30",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_5",
+      "label": "fwd_oo_1",
+      "ic": -0.03296743418690613,
+      "t_hac": -1.1492178743177657,
+      "p_hac": 0.2504661522459912,
+      "n": 1155,
+      "p_naive": 0.26292732738282365,
+      "ic_first_half": -0.025639235410150434,
+      "ic_second_half": -0.036140216253664974,
+      "period": [
+        "2021-10-06",
+        "2026-07-02"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_5",
+      "label": "fwd_oo_5",
+      "ic": -0.0464372048420245,
+      "t_hac": -0.96242715642246,
+      "p_hac": 0.335835077829584,
+      "n": 1151,
+      "p_naive": 0.11535240269540566,
+      "ic_first_half": -0.010012979445132072,
+      "ic_second_half": -0.07340489350886284,
+      "period": [
+        "2021-10-06",
+        "2026-06-26"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_5",
+      "label": "fwd_oo_20",
+      "ic": -0.006838694134684658,
+      "t_hac": -0.13742010470992205,
+      "p_hac": 0.8906987405389879,
+      "n": 1136,
+      "p_naive": 0.8179018764849127,
+      "ic_first_half": -0.01985617134370739,
+      "ic_second_half": -0.0033980491847499534,
+      "period": [
+        "2021-10-06",
+        "2026-06-05"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_5",
+      "label": "gap",
+      "ic": 0.015363857136865278,
+      "t_hac": 0.5529653723374348,
+      "p_hac": 0.5802871218202321,
+      "n": 1157,
+      "p_naive": 0.6016264942403218,
+      "ic_first_half": 0.005223531859773791,
+      "ic_second_half": 0.02768277030665468,
+      "period": [
+        "2021-10-06",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_20",
+      "label": "fwd_oo_1",
+      "ic": -0.005314070666667438,
+      "t_hac": -0.20551217193431784,
+      "p_hac": 0.8371719892271585,
+      "n": 1140,
+      "p_naive": 0.8577585956527148,
+      "ic_first_half": -0.010618068923313606,
+      "ic_second_half": -0.0011772732004417228,
+      "period": [
+        "2021-10-27",
+        "2026-07-02"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_20",
+      "label": "fwd_oo_5",
+      "ic": -0.03812135928210971,
+      "t_hac": -0.7809946259320572,
+      "p_hac": 0.43480565547733074,
+      "n": 1136,
+      "p_naive": 0.19917089241574096,
+      "ic_first_half": -0.03497782114274602,
+      "ic_second_half": -0.03878995765846514,
+      "period": [
+        "2021-10-27",
+        "2026-06-26"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_20",
+      "label": "fwd_oo_20",
+      "ic": 0.0038026582167362735,
+      "t_hac": 0.04583730808877406,
+      "p_hac": 0.963439922494109,
+      "n": 1121,
+      "p_naive": 0.8988007022799339,
+      "ic_first_half": -0.05445742725280998,
+      "ic_second_half": 0.04865494812067645,
+      "period": [
+        "2021-10-27",
+        "2026-06-05"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "semi_mom_20",
+      "label": "gap",
+      "ic": 0.01510754793841655,
+      "t_hac": 0.520171352384612,
+      "p_hac": 0.6029441503689994,
+      "n": 1142,
+      "p_naive": 0.6100467103330193,
+      "ic_first_half": 0.015162568279645225,
+      "ic_second_half": 0.014567497350864492,
+      "period": [
+        "2021-10-27",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oo_1",
+      "ic": 0.03441245551183491,
+      "t_hac": 1.1527824273877927,
+      "p_hac": 0.24899969885619377,
+      "n": 1160,
+      "p_naive": 0.24154682548181416,
+      "ic_first_half": 0.015423995788794487,
+      "ic_second_half": 0.0486089241739301,
+      "period": [
+        "2021-10-01",
+        "2026-07-02"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oo_5",
+      "ic": 0.004663708511538233,
+      "t_hac": 0.16197797596224167,
+      "p_hac": 0.8713231974585365,
+      "n": 1156,
+      "p_naive": 0.8741452339511191,
+      "ic_first_half": 0.012591165231728766,
+      "ic_second_half": -0.0013753515854541553,
+      "period": [
+        "2021-10-01",
+        "2026-06-26"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oo_20",
+      "ic": 0.01671114667498647,
+      "t_hac": 0.6879253409545448,
+      "p_hac": 0.4914997976524498,
+      "n": 1141,
+      "p_naive": 0.5728212876394942,
+      "ic_first_half": -0.013779791774320555,
+      "ic_second_half": 0.04161573498312103,
+      "period": [
+        "2021-10-01",
+        "2026-06-05"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "gap",
+      "ic": -0.05940704624622902,
+      "t_hac": -2.1012989442124765,
+      "p_hac": 0.03561473238554491,
+      "n": 1161,
+      "p_naive": 0.042989689896234286,
+      "ic_first_half": -0.017728833408493037,
+      "ic_second_half": -0.09757070545658461,
+      "period": [
+        "2021-10-01",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oc_1",
+      "ic": 0.0847028179500434,
+      "t_hac": 2.9388503148541307,
+      "p_hac": 0.003294321326276828,
+      "n": 1162,
+      "p_naive": 0.003859209827213846,
+      "ic_first_half": 0.07123889764478909,
+      "ic_second_half": 0.09209328905921778,
+      "period": [
+        "2021-10-01",
+        "2026-07-03"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oc_5",
+      "ic": 0.013053206360830367,
+      "t_hac": 0.43902092823580396,
+      "p_hac": 0.6606463720459526,
+      "n": 1157,
+      "p_naive": 0.6573752651815766,
+      "ic_first_half": 0.022904862731629838,
+      "ic_second_half": 0.002517276465927549,
+      "period": [
+        "2021-10-01",
+        "2026-06-29"
+      ],
+      "significant_bonferroni": NaN
+    },
+    {
+      "role": "reference",
+      "var": "sox_ret_overnight_old",
+      "label": "fwd_oc_20",
+      "ic": 0.016569531145443753,
+      "t_hac": 0.7088725943303305,
+      "p_hac": 0.47840354336366353,
+      "n": 1142,
+      "p_naive": 0.5759109456988564,
+      "ic_first_half": 0.0008535535592997611,
+      "ic_second_half": 0.03349423060199751,
+      "period": [
+        "2021-10-01",
+        "2026-06-08"
+      ],
+      "significant_bonferroni": NaN
+    }
+  ]
+}
