@@ -1,0 +1,438 @@
+{
+  "A_method2": {
+    "period": [
+      "2026-02-13",
+      "2026-07-02"
+    ],
+    "n_rows": 100,
+    "returns": {
+      "sox_adj_close_return": {
+        "match_US_t": 0,
+        "match_US_t-1": 96,
+        "pearson_US_t": -0.0964264699281033,
+        "pearson_US_t-1": 0.9798224544039124,
+        "non_matching_t-1": {
+          "2026-02-17": {
+            "feature": 0.0,
+            "US_t-1": 0.00655381863961852
+          },
+          "2026-04-06": {
+            "feature": 0.0,
+            "US_t-1": 0.00397553274512123
+          },
+          "2026-05-26": {
+            "feature": 0.0,
+            "US_t-1": 0.019735295989614744
+          },
+          "2026-06-22": {
+            "feature": 0.0,
+            "US_t-1": 0.062187228851058596
+          }
+        }
+      },
+      "nvda_adj_close_return": {
+        "match_US_t": 0,
+        "match_US_t-1": 96,
+        "pearson_US_t": -0.02464970336514343,
+        "pearson_US_t-1": 0.9843067455578172,
+        "non_matching_t-1": {
+          "2026-02-17": {
+            "feature": 0.0,
+            "US_t-1": -0.022340433476236748
+          },
+          "2026-04-06": {
+            "feature": 0.0,
+            "US_t-1": 0.009288088228185538
+          },
+          "2026-05-26": {
+            "feature": 0.0,
+            "US_t-1": -0.01922601401684015
+          },
+          "2026-06-22": {
+            "feature": 0.0,
+            "US_t-1": 0.02908669731246372
+          }
+        }
+      },
+      "tsm_adj_close_return": {
+        "match_US_t": 0,
+        "match_US_t-1": 96,
+        "pearson_US_t": -0.18759572643167224,
+        "pearson_US_t-1": 0.9731403292385487,
+        "non_matching_t-1": {
+          "2026-02-17": {
+            "feature": 0.0,
+            "US_t-1": -0.004738244405851382
+          },
+          "2026-04-06": {
+            "feature": 0.0,
+            "US_t-1": -0.007200208636546495
+          },
+          "2026-05-26": {
+            "feature": 0.0,
+            "US_t-1": -0.006480451938372083
+          },
+          "2026-06-22": {
+            "feature": 0.0,
+            "US_t-1": 0.06705185097366137
+          }
+        }
+      },
+      "vxn_adj_close_return": {
+        "match_US_t": 0,
+        "match_US_t-1": 96,
+        "pearson_US_t": -0.17915750477427955,
+        "pearson_US_t-1": 0.9921314416176938,
+        "non_matching_t-1": {
+          "2026-02-17": {
+            "feature": 0.0,
+            "US_t-1": -0.01878342166999558
+          },
+          "2026-04-06": {
+            "feature": 0.0,
+            "US_t-1": -0.01904814173443741
+          },
+          "2026-05-26": {
+            "feature": 0.0,
+            "US_t-1": 0.0035118528035320883
+          },
+          "2026-06-22": {
+            "feature": 0.0,
+            "US_t-1": -0.08205804401834106
+          }
+        }
+      }
+    },
+    "levels": {
+      "vxn_close": {
+        "match_US_t": 0,
+        "match_US_t-1": 100
+      },
+      "vxn_high": {
+        "match_US_t": 0,
+        "match_US_t-1": 100
+      },
+      "vxn_low": {
+        "match_US_t": 1,
+        "match_US_t-1": 100
+      }
+    },
+    "normalized": {
+      "SOX_Intraday_Force": {
+        "spearman_US_t": 0.006199131850244168,
+        "spearman_US_t-1": 1.0
+      },
+      "SOX_Overnight_Gap": {
+        "spearman_US_t": -0.15758274552360282,
+        "spearman_US_t-1": 0.9534887908132299
+      }
+    },
+    "vix_columns_in_yf_cache": [],
+    "fred_columns_in_feature_file": []
+  },
+  "B_split": {
+    "window": {
+      "2024-10-04": {
+        "2644.T_open": 3750.0,
+        "2644.T_close": 3735.0,
+        "2644.T_adj_close": 3658.015380859375,
+        "2644.T_volume": 241683.0
+      },
+      "2024-10-07": {
+        "2644.T_open": 3820.0,
+        "2644.T_close": 3770.0,
+        "2644.T_adj_close": 3692.2939453125,
+        "2644.T_volume": 315337.0
+      },
+      "2024-10-08": {
+        "2644.T_open": 3745.0,
+        "2644.T_close": 3725.0,
+        "2644.T_adj_close": 3648.22119140625,
+        "2644.T_volume": 344391.0
+      },
+      "2024-10-09": {
+        "2644.T_open": 1896.0,
+        "2644.T_close": 1896.0,
+        "2644.T_adj_close": 1856.9200439453125,
+        "2644.T_volume": 369022.0
+      },
+      "2024-10-10": {
+        "2644.T_open": 1915.0,
+        "2644.T_close": 1872.0,
+        "2644.T_adj_close": 1833.4149169921875,
+        "2644.T_volume": 209590.0
+      },
+      "2024-10-11": {
+        "2644.T_open": 1872.0,
+        "2644.T_close": 1877.0,
+        "2644.T_adj_close": 1838.311767578125,
+        "2644.T_volume": 253445.0
+      },
+      "2024-10-14": {
+        "2644.T_open": null,
+        "2644.T_close": null,
+        "2644.T_adj_close": null,
+        "2644.T_volume": null
+      },
+      "2024-10-15": {
+        "2644.T_open": 1910.0,
+        "2644.T_close": 1950.0,
+        "2644.T_adj_close": 1909.80712890625,
+        "2644.T_volume": 1002631.0
+      }
+    },
+    "close_ratio_1009_over_1008": 0.508993288590604,
+    "adjclose_ratio_1009_over_1008": 0.5089932727542599,
+    "open_ratio_1009_over_1008": 0.5062750333778371,
+    "largest_abs_logret_adj_close": {
+      "2024-10-09": 0.6753204791117629,
+      "2024-08-05": 0.17697391625001657,
+      "2025-04-07": 0.12163793305370607
+    },
+    "adj_over_raw_ratio": {
+      "before_split_mean": 0.9736447597056127,
+      "after_split_mean": 0.9915308305758074
+    },
+    "feature_file": {
+      "target_1@2024-10-08": -0.6806752131360922,
+      "log(open1009/open1008)": -0.6806752131363528,
+      "semi_adj_close_return_lag1@2024-10-10": -0.675320479111764,
+      "semi_adj_close_return_lag2@2024-10-11": -0.675320479111764,
+      "target_1_std_all": 0.03704659565263489,
+      "target_1_std_excl_1008": 0.027918030105817147,
+      "target_1_abs_top5": {
+        "2024-10-08": 0.6806752131360922,
+        "2025-04-04": 0.1959879248429536,
+        "2025-04-09": 0.14414441274127573,
+        "2024-08-02": 0.12889789346264408,
+        "2025-04-07": 0.10922834188719822
+      }
+    },
+    "target_is_open_to_open": true
+  },
+  "misc": {
+    "fred_frequency": {
+      "us_10y": {
+        "first": "2021-09-28",
+        "last": "2026-07-01",
+        "n": 1188,
+        "only_day1": false
+      },
+      "us_2y": {
+        "first": "2021-09-28",
+        "last": "2026-07-01",
+        "n": 1188,
+        "only_day1": false
+      },
+      "effr": {
+        "first": "2021-09-01",
+        "last": "2026-06-01",
+        "n": 58,
+        "only_day1": true
+      },
+      "jp_10y_yield": {
+        "first": "2021-09-01",
+        "last": "2026-05-01",
+        "n": 57,
+        "only_day1": true
+      },
+      "us_10y_breakeven": {
+        "first": "2021-09-28",
+        "last": "2026-07-02",
+        "n": 1189,
+        "only_day1": false
+      },
+      "expected_inflation": {
+        "first": "2021-09-28",
+        "last": "2026-07-02",
+        "n": 1189,
+        "only_day1": false
+      },
+      "credit_spread": {
+        "first": "2023-07-04",
+        "last": "2026-07-02",
+        "n": 787,
+        "only_day1": false
+      },
+      "market_liquidity": {
+        "first": "2021-09-28",
+        "last": "2022-01-21",
+        "n": 76,
+        "only_day1": false
+      },
+      "dollar_index": {
+        "first": "2021-09-28",
+        "last": "2026-06-26",
+        "n": 1186,
+        "only_day1": false
+      }
+    },
+    "feature_file_first_date": "2023-07-04",
+    "feature_file_rows": 783,
+    "head_rows_identical_bfill_evidence": {
+      "semi_adj_close_return_lag1": [
+        -0.00299,
+        -0.00299,
+        -0.00299,
+        -0.027316
+      ],
+      "semi_adj_close_return_lag2": [
+        -0.00299,
+        -0.00299,
+        -0.00299,
+        -0.00299
+      ],
+      "sox_adj_close_return_lag2": [
+        -0.022196,
+        -0.022196,
+        -0.022196,
+        -0.022196
+      ],
+      "Sector_Relative_Strength_5d": [
+        1.24125,
+        1.24125,
+        1.24125,
+        1.24125
+      ]
+    },
+    "non_tokyo_session_rows_in_feature_file": 51,
+    "examples_non_session_rows": [
+      "2023-07-17",
+      "2023-08-11",
+      "2023-09-18",
+      "2023-10-09",
+      "2023-11-03",
+      "2023-11-23",
+      "2024-01-01",
+      "2024-01-02"
+    ],
+    "target_exact_zero_rows": 65,
+    "constant_columns": [
+      "NVDA_Impact_Factor",
+      "vxn_volume"
+    ],
+    "Sector_Relative_Strength_5d_spearman_vs_minus_nikkei5d": 1.0
+  },
+  "A_method1_shift_map": {
+    "shifted_by_1_weekday": [
+      "dollar_index",
+      "eur_usd",
+      "gold",
+      "mu",
+      "nasdaq_100",
+      "nvda",
+      "sox",
+      "tsm",
+      "us_10y",
+      "us_10y_breakeven",
+      "us_10y_yield",
+      "us_2y",
+      "vt",
+      "vxn"
+    ],
+    "NOT_shifted": [
+      "advantest",
+      "credit_spread",
+      "disco",
+      "effr",
+      "eur_jpy",
+      "expected_inflation",
+      "jp_10y_yield",
+      "market_liquidity",
+      "nikkei_225",
+      "semi",
+      "tokyo_electron",
+      "usd_jpy"
+    ],
+    "matched_lag_substring": {
+      "dollar_index": [
+        "dollar_index"
+      ],
+      "eur_usd": [
+        "eur_usd"
+      ],
+      "gold": [
+        "gold"
+      ],
+      "mu": [
+        "mu"
+      ],
+      "nasdaq_100": [
+        "nasdaq"
+      ],
+      "nvda": [
+        "nvda"
+      ],
+      "sox": [
+        "sox"
+      ],
+      "tsm": [
+        "tsm"
+      ],
+      "us_10y": [
+        "us_10y"
+      ],
+      "us_10y_breakeven": [
+        "us_10y"
+      ],
+      "us_10y_yield": [
+        "us_10y"
+      ],
+      "us_2y": [
+        "us_2y"
+      ],
+      "vt": [
+        "vt"
+      ],
+      "vxn": [
+        "vxn"
+      ]
+    }
+  },
+  "label_alignment": {
+    "n_rows_checked": 728,
+    "n_label_equals_true_next_session": 647,
+    "n_mismatch": 81,
+    "n_mismatch_label_is_zero": 46,
+    "n_mismatch_label_starts_at_open_t": 34,
+    "n_mismatch_split_row": 1,
+    "examples": [
+      {
+        "Date": "2023-07-13",
+        "label": 0.0,
+        "true": 0.018377,
+        "starts_at_open_t": 0.020297
+      },
+      {
+        "Date": "2023-07-14",
+        "label": 0.018377,
+        "true": 0.010566,
+        "starts_at_open_t": 0.018377
+      },
+      {
+        "Date": "2023-08-09",
+        "label": 0.0,
+        "true": -0.011209,
+        "starts_at_open_t": 0.00639
+      },
+      {
+        "Date": "2023-08-10",
+        "label": -0.011209,
+        "true": 0.017558,
+        "starts_at_open_t": -0.011209
+      },
+      {
+        "Date": "2023-09-14",
+        "label": 0.0,
+        "true": -0.017785,
+        "starts_at_open_t": 0.022691
+      },
+      {
+        "Date": "2023-09-15",
+        "label": -0.017785,
+        "true": -0.01977,
+        "starts_at_open_t": -0.017785
+      }
+    ]
+  }
+}

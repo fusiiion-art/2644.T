@@ -1,0 +1,68 @@
+{
+  "daily_2644t_risk_off_ridge_optimization.db": {
+    "direction": "MINIMIZE",
+    "total_trials": 2001,
+    "by_state": {
+      "COMPLETE": 2001
+    },
+    "by_value_type": {
+      "FINITE": 1,
+      "INF_POS": 2000
+    },
+    "finite_complete": 1,
+    "pruned": 0,
+    "best_finite_trial": {
+      "number": 2000,
+      "value_mse": 0.0041377632413059475,
+      "params": {
+        "dropout": 0.3696060949151896,
+        "lr": 0.0007981901492162417,
+        "n_features_to_select": 20.0,
+        "weight_decay": 3.291279167486651
+      }
+    },
+    "datetime_range": [
+      "2026-07-04 21:37:10.822223",
+      "2026-07-04 21:44:39.596470"
+    ]
+  },
+  "daily_2644t_risk_on_ridge_optimization.db": {
+    "direction": "MINIMIZE",
+    "total_trials": 2323,
+    "by_state": {
+      "COMPLETE": 2016,
+      "FAIL": 1,
+      "PRUNED": 305,
+      "RUNNING": 1
+    },
+    "by_value_type": {
+      "FINITE": 321,
+      "INF_POS": 2000
+    },
+    "finite_complete": 16,
+    "pruned": 305,
+    "best_finite_trial": {
+      "number": 2303,
+      "value_mse": 0.0006307661999017001,
+      "params": {
+        "dropout": 0.14555127041379876,
+        "lr": 0.005090869118842362,
+        "n_features_to_select": 4.0,
+        "weight_decay": 0.0007331433433119217
+      }
+    },
+    "datetime_range": [
+      "2026-07-04 21:36:03.678362",
+      "2026-07-04 21:44:26.943546"
+    ]
+  },
+  "all_trials_summary_csv_rows": {
+    "logs/daily_2644t_risk_off_ridge_final_training/version_0/all_trials_summary.csv": 2000,
+    "logs/daily_2644t_risk_off_ridge_final_training/version_1/all_trials_summary.csv": 1,
+    "logs/daily_2644t_risk_on_ridge_final_training/version_0/all_trials_summary.csv": 2000,
+    "logs/daily_2644t_risk_on_ridge_final_training/version_1/all_trials_summary.csv": 188,
+    "logs/daily_2644t_risk_on_ridge_final_training/version_2/all_trials_summary.csv": 132,
+    "logs/daily_2644t_risk_on_ridge_final_training/version_3/all_trials_summary.csv": 1
+  },
+  "grand_total_trials_in_db": 4324
+}
