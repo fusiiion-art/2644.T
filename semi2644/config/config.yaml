@@ -25,6 +25,12 @@ v2:
   ma_window: 25
   # ラベル（フェーズ2の固定ホライズン比較用）
   label_horizons: [1, 5, 20]
+  # ラベル（フェーズ3: 利確指値バリア。設計書 v2 ラベリング設計）
+  barrier_max_hold_days: 20             # 学習用の打ち切り。運用では売却日を決めない
+  barrier_vol_scale_days: 5             # σ̂ × √5 で1週間分のボラにそろえる
+  barrier_g_fixed: [0.02, 0.03, 0.04, 0.05]      # 買値に対する利確率の候補（入れ子CVの内側で選ぶ）
+  barrier_g_vol_multiples: [0.25, 0.5, 1.0]      # 週次ボラ（σ̂√5）の倍率の候補
+  barrier_fill_within_days: [5, 20]     # 補助ラベル「h 営業日以内に約定したか」
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21

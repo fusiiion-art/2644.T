@@ -24,7 +24,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from common_utils.target_utils import v2_forward_returns  # noqa: E402
+from common_utils.target_utils import v2_barrier_labels, v2_forward_returns  # noqa: E402
 from data.adjust import load_price_config, raw_ohlc_from_cache, split_adjust_ohlc  # noqa: E402
 
 JST = "Asia/Tokyo"
@@ -226,3 +226,19 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def barrier_labels(ds: dict, g_fixed: float | None = None, vol_multiple: float | None = None,
+                   cfg: dict | None = None) -> pd.DataFrame:
+    """build_v2_dataset の結果から利確指値バリアのラベルを作る（g は固定率か、週次ボラ σ̂√5 の倍率のどちらか一方）。
+
+    σ̂ は特徴量 semi_ewm_vol（判断時刻より前に既知の EWMA ボラ）を使う。
+    """
+    cfg = cfg or v2_config()
+    if (g_fixed is None) == (vol_multiple is None):
+        raise ValueError("g_fixed か vol_multiple のどちらか一方を指定する")
+    sig = ds["features"]["semi_ewm_vol"]
+    k = int(cfg["barrier_vol_scale_days"])
+    g = float(g_fixed) if g_fixed is not None else float(vol_multiple) * sig * np.sqrt(k)
+    return v2_barrier_labels(ds["prices"], sig, g, int(cfg["barrier_max_hold_days"]), k,
+                             tuple(cfg["barrier_fill_within_days"]))
