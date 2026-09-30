@@ -16,9 +16,7 @@ sys.path.append(str(project_root))
 # --- 共通モジュールとモデルのインポート ---
 from common_utils.trainer_model import TrainingOrchestrator
 from models.linear_model import RidgeLightning, ElasticNetLightning
-from models.dlinear_model import DLinearLightning, NLinearLightning
 from models.lightgbm_model import LightGBMLightning
-from models.tcn_attention_model import TCNAttentionLightning
 import timescale_modules.daily_2644t.config_daily_2644t as cfg
 
 # ★ログ設定: loggingの出力を有効化（これがないとlogging.infoが出力されない）
@@ -32,14 +30,11 @@ warnings.filterwarnings('ignore', category=UserWarning)
 warnings.filterwarnings('ignore', category=FutureWarning)
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
-# ★T+1予測は複数の軽量モデルで統合する
+# 旧パイプライン。DLinear・TCN などは research/legacy/ へ移した（設計書 v2 フェーズ3）
 MODEL_MAP: Dict[str, Type[pl.LightningModule]] = {
     "ridge": RidgeLightning,
     "elasticnet": ElasticNetLightning,
-    "dlinear": DLinearLightning,
-    "nlinear": NLinearLightning,
     "lightgbm": LightGBMLightning,
-    "tcn_attention": TCNAttentionLightning,
 }
 
 # Joblib Temp Dir Setup

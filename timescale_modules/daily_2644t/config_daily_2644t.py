@@ -164,8 +164,8 @@ REGIMES = COMMON_TRAINING_PARAMS["regimes"]
 # ★上書き: daily_2644tは小データ(~1000行)向けなので軽量モデルを使用
 # trainer_daily_2644t.pyのMODEL_MAPと一致させる
 REGIME_EXPERTS = {
-    "risk_on": ["ridge", "elasticnet", "dlinear", "nlinear", "lightgbm", "tcn_attention"],
-    "risk_off": ["ridge", "elasticnet", "dlinear", "nlinear", "lightgbm", "tcn_attention"],
+    "risk_on": ["ridge", "elasticnet", "lightgbm"],
+    "risk_off": ["ridge", "elasticnet", "lightgbm"],
 }
 EXPERTS_CONFIG: Dict[str, Dict] = REGIME_EXPERTS
 
@@ -183,14 +183,11 @@ ALL_EXPERTS_FLAT = list(set(expert for experts in REGIME_EXPERTS.values() for ex
 EXPERTS_CONFIG: List[Dict[str, str]] = [{"name": expert, "log_dir_name": expert} for expert in ALL_EXPERTS_FLAT]
 
 STACKER_INPUT_COLUMNS: List[str] = [
-    "ridge", "elasticnet", "dlinear", "nlinear", "lightgbm", "tcn_attention",
+    "ridge", "elasticnet", "lightgbm",
     "meta_experts_std_5d",
     "meta_ridge_abs_error_5d",
     "meta_elasticnet_abs_error_5d",
-    "meta_dlinear_abs_error_5d",
-    "meta_nlinear_abs_error_5d",
     "meta_lightgbm_abs_error_5d",
-    "meta_tcn_attention_abs_error_5d",
 ]
 
 # === 9. 最強パラメータ (初期値) ===

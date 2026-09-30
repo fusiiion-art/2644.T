@@ -5,6 +5,54 @@ data:
   start: "2021-09-28"
   yfinance: {auto_adjust: false, actions: true, repair: false}
   overlap_days: 15
+  revision_rtol: 0.0001   # 重なり期間の過去値がこれ以上変わったら遡及調整とみなし全期間を取り直す
   jump_bounds: [0.55, 1.8]
 ops:
   exdiv_guard_days: 3
+v2:
+  # 判断時刻と各市場の「値が確定する時刻」（設計書 v2 タイムライン設計）
+  decision_time_jst: "08:50"
+  tokyo_open_jst: "09:00"
+  tokyo_close_jst_before: "15:00"
+  tokyo_close_jst_after: "15:30"
+  tokyo_close_change_date: "2024-11-05"
+  us_close_local: "16:00"          # America/New_York。夏時間は tz 変換に任せる
+  # FRED は ALFRED の realtime_start（公表日）の翌日 0:00 America/New_York に既知とみなす（公表時刻が不明なため保守的に）
+  fred_known_lag_days: 1
+  # 特徴量
+  ewma_vol_halflife: 20
+  momentum_windows: [5, 20]
+  ma_window: 25
+  # ラベル（フェーズ2の固定ホライズン比較用）
+  label_horizons: [1, 5, 20]
+  # ラベル（フェーズ3: 利確指値バリア。設計書 v2 ラベリング設計）
+  barrier_max_hold_days: 20             # 学習用の打ち切り。運用では売却日を決めない
+  barrier_vol_scale_days: 5             # σ̂ × √5 で1週間分のボラにそろえる
+  barrier_g_fixed: [0.02, 0.03, 0.04, 0.05]      # 買値に対する利確率の候補（入れ子CVの内側で選ぶ）
+  barrier_g_vol_multiples: [0.25, 0.5, 1.0]      # 週次ボラ（σ̂√5）の倍率の候補
+  barrier_fill_within_days: [5, 20]     # 補助ラベル「h 営業日以内に約定したか」
+  # 運用ルール（2026-09-30 ユーザー確定）。数量は生の口数
+  position_lot_units: 100               # 1回の売買は100口
+  position_max_units: 300               # 保有上限（100口 × 3回）
+  position_add_on_drop: 0.04            # 前日終値が平均取得価格から4%以上下なら、寄付で100口買い増し（1日1回まで）
+  round_trip_cost: 0.001                # 往復コスト c の初期値（0.10%）。建て・手仕舞いに半分ずつ
+  # 利確指値は「平均取得価格 × (1 + g)」で全口まとめて置く（g は建てた日に決め、買い増しても変えない）
+  # モデル（フェーズ3。設計書 v2 モデル構成・評価設計）。特徴量選択はしない（試行数を増やさない）
+  model_features: [sox_ret_overnight, nvda_ret_overnight, tsm_ret_overnight, mu_ret_overnight, ndx_ret_overnight,
+                   sox_mom_5, sox_mom_20, vxn_close, semi_ret_1d, semi_intraday, semi_mom_5, semi_mom_20,
+                   semi_ewm_vol, semi_ma25_dev, n225_ret_1d, n225_mom_5]
+  model_interactions: [[sox_ret_overnight, vxn_close]]   # レジームは分割せず交差項で入れる
+  huber_epsilon: 1.5                    # Huber の δ（正規化後の単位）
+  huber_alpha_grid: [0.0001, 0.01, 1.0]
+  huber_max_iter: 1000
+  lgbm_params: {objective: huber, alpha: 1.5, num_leaves: 4, min_child_samples: 50, learning_rate: 0.02,
+                feature_fraction: 0.7, bagging_fraction: 0.7, bagging_freq: 1, n_estimators: 1000, seed: 0}
+  lgbm_early_stopping_rounds: 50
+  signal_k_grid: [0.0, 0.25, 0.5]       # BUY: μ̂ > c + k·σ̂√5
+  cpcv_n_groups: 6
+  cpcv_n_test_groups: 2
+  cpcv_embargo_days: 20                 # テスト区間（ラベル終端）の後ろを学習に使わない日数
+  dev_end: "2026-07-03"                 # 開発期間の終わり。これより後は凍結ホールドアウト
+  # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
+  wf_min_train_rows: 252
+  wf_refit_every_rows: 21

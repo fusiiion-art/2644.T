@@ -1,18 +1,26 @@
+"""再学習つき拡大窓のウォークフォワード検証（監査 G-9 の修正）。
+
+旧版は全期間で学習済みの本番モデルで後半50%を予測していた（in-sample）うえ、予測 k を target[k] と
+比べていた（学習ラベルは target[k+1] なので1日ずれ）。本版は:
+- wf_refit_every_rows 行ごとに、その時点より前の行だけでレジーム別にモデルを学習し直す
+  （学習手順は ExpertTrainer.fit_in_memory = 本番の _train_full_period と同じ関数）。
+- 行 k の予測は、直近 SEQUENCE_LENGTH 行（本番の predicter と同じ連続行）から作る。
+- actual は学習ラベルと同じ区間（窓の最終行 k → target[k+1]）。
+- 出力 CSV の列（regime, actual, pred_<model>）は従来どおりなので、supervisor は真の OOF だけを読む。
+数値パラメータは semi2644/config/config.yaml の v2 節（wf_min_train_rows, wf_refit_every_rows）。
 """
-ウォークフォワード検証スクリプト (リファクタリング版)
-- predicter_model.py と同じデータフロー（ExpertPredicter/AssetLoader）を使用
-- これにより訓練時と検証時の特徴量処理が一致
-"""
-import pandas as pd
-import torch
-import numpy as np
-from pathlib import Path
-import warnings
-import sys
+from __future__ import annotations
+
 import argparse
 import importlib
+import sys
+import warnings
+from pathlib import Path
+from typing import Callable
 
-# --- プロジェクトルート設定 ---
+import numpy as np
+import pandas as pd
+
 try:
     PROJECT_ROOT = Path(__file__).resolve().parents[1]
 except NameError:
@@ -20,148 +28,143 @@ except NameError:
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from common_utils.regime_detector import RegimeDetector
-from common_utils.asset_loader import AssetLoader
-from common_utils.predicter_model import ExpertPredicter
-
 warnings.filterwarnings("ignore")
 
-def run_walk_forward(timescale: str):
-    """ウォークフォワード検証を実行（predicterと同じデータフローを使用）"""
-    print(f"\n{'='*20} ウォークフォワード検証 ({timescale}) を開始 {'='*20}")
 
-    # Config読み込み
-    try:
-        config_module_path = f"timescale_modules.{timescale}.config_{timescale}"
-        cfg = importlib.import_module(config_module_path)
-        print(f" -> 設定ファイル '{config_module_path}' を読み込みました。")
-    except ImportError:
-        print(f"\n[エラー] タイムスケール '{timescale}' の設定ファイルが見つかりませんでした。")
-        sys.exit(1)
+def walk_forward_oof(
+    df: pd.DataFrame,
+    fit_fn: Callable[[pd.DataFrame], dict],
+    predict_fn: Callable[[str, object, pd.DataFrame], float],
+    target_col: str,
+    min_train: int,
+    refit_every: int,
+    regime_col: str = "regime",
+) -> pd.DataFrame:
+    """拡大窓で再学習しながら、行 min_train 以降の各行を1回だけ予測する。
 
-    # AssetLoader初期化
-    loader = AssetLoader(PROJECT_ROOT, timescale)
-    
-    # データ読み込み
-    print("\n--- データの準備 ---")
-    data_path = PROJECT_ROOT / "data" / cfg.OUTPUT_FILENAME
-    if not data_path.exists():
-        print(f"[エラー] データファイルが見つかりません: {data_path}")
-        return
-    
-    df_all = pd.read_parquet(data_path)
-    df_all.columns = [col.replace('.', '_') for col in df_all.columns]
-    if 'Date' in df_all.columns:
-        df_all['Date'] = pd.to_datetime(df_all['Date'])
-        df_all = df_all.set_index('Date')
-    df_all = df_all.sort_index()
-    print(f" -> データ形状: {df_all.shape}")
+    fit_fn(train_df) -> {model_name: {regime: fitted or None}}。train_df は予測行より前の行だけ。
+    predict_fn(model_name, fitted, history_df) -> 予測値。history_df は予測行までの行（その行を含む）。
+    """
+    rows = []
+    n = len(df)
+    target = df[target_col].to_numpy(dtype=float)
+    for j in range(min_train, n, refit_every):
+        fitted = fit_fn(df.iloc[:j])
+        for k in range(j, min(j + refit_every, n)):
+            regime = df[regime_col].iloc[k]
+            row = {"Date": df.index[k], "regime": regime,
+                   "actual": target[k + 1] if k + 1 < n else np.nan,
+                   "train_rows": j}
+            for name, by_regime in fitted.items():
+                model = (by_regime or {}).get(regime)
+                row[f"pred_{name}"] = predict_fn(name, model, df.iloc[: k + 1]) if model is not None else np.nan
+            rows.append(row)
+    return pd.DataFrame(rows).set_index("Date")
 
-    # レジーム判定
-    detector = RegimeDetector()
-    df_all = detector.detect_simple_vix(df_all.copy(), cfg.REGIME_VIX_COLUMN, cfg.REGIME_VIX_THRESHOLD)
 
-    # 結果格納用DataFrame
+# ---------- 既存パイプライン（timescale_modules）向けの実装 ----------
+def _best_finite_params(cfg, regime: str, model_name: str) -> dict | None:
+    """BEST_PARAMS、なければ Optuna DB の「値が有限の完了試行」の最良（監査 G-7: ±inf を最良にしない）。"""
+    params = getattr(cfg, "BEST_PARAMS", {}).get(regime, {}).get(model_name)
+    if params:
+        return params
+    import optuna
+    study_name = f"{cfg.MODULE_NAME}_{regime}_{model_name}_optimization"
+    db = PROJECT_ROOT / "logs" / "optuna_db" / f"{study_name}.db"
+    if not db.exists():
+        return None
+    study = optuna.load_study(study_name=study_name, storage=f"sqlite:///{db}")
+    done = [t for t in study.trials
+            if t.state == optuna.trial.TrialState.COMPLETE and t.value is not None and np.isfinite(t.value)]
+    return min(done, key=lambda t: t.value).params if done else None
+
+
+def _make_fit_fn(cfg, model_map: dict, models: list[str], params: dict, accelerator: str):
+    from common_utils.trainer_model import ExpertTrainer
+
+    def fit_fn(train: pd.DataFrame) -> dict:
+        out = {m: {} for m in models}
+        for regime in cfg.REGIMES:
+            df_regime = train[train["regime"] == regime]
+            for m in models:
+                p = params.get((regime, m))
+                if p is None or m not in cfg.REGIME_EXPERTS.get(regime, []):
+                    out[m][regime] = None
+                    continue
+                try:
+                    et = ExpertTrainer(m, model_map[m], df_regime.copy(), cfg, PROJECT_ROOT,
+                                       f"{cfg.MODULE_NAME}_{regime}_{m}_wf", PROJECT_ROOT / "logs")
+                    out[m][regime] = et.fit_in_memory(p, accelerator=accelerator)
+                except Exception as e:  # 行数不足など
+                    print(f"  ⚠️ {m}/{regime} (train rows={len(df_regime)}): {e}")
+                    out[m][regime] = None
+        return out
+    return fit_fn
+
+
+def _predict_fn(name: str, fitted: dict, history: pd.DataFrame) -> float:
+    import torch
+    seq_len = fitted["seq_len"]
+    if len(history) < seq_len:
+        return np.nan
+    x = np.nan_to_num(history[fitted["features"]].to_numpy(dtype=float)[-seq_len:], nan=0.0, posinf=0.0, neginf=0.0)
+    x = fitted["scaler"].transform(x).astype(np.float32)
+    model = fitted["model"]
+    params = list(model.parameters())
+    device = params[0].device if params else torch.device("cpu")
+    with torch.no_grad():
+        out = model(torch.from_numpy(x).unsqueeze(0).to(device))
+    out = out[0] if isinstance(out, (tuple, list)) else out
+    return float(out.detach().cpu().reshape(-1)[0])
+
+
+def run_walk_forward(timescale: str, models: list[str] | None = None, accelerator: str = "auto") -> pd.DataFrame:
+    from common_utils.regime_detector import RegimeDetector
+    from data.adjust import load_price_config
+
+    cfg = importlib.import_module(f"timescale_modules.{timescale}.config_{timescale}")
+    model_map = importlib.import_module(f"timescale_modules.{timescale}.trainer_{timescale}").MODEL_MAP
+    v2 = load_price_config()["v2"]
+
+    df = pd.read_parquet(PROJECT_ROOT / "data" / cfg.OUTPUT_FILENAME)
+    df.columns = [c.replace(".", "_") for c in df.columns]
+    df["Date"] = pd.to_datetime(df["Date"])
+    df = df[df["Date"] >= cfg.DATA_START_DATE].set_index("Date").sort_index()
+    df = RegimeDetector.detect_simple_vix(df, cfg.REGIME_VIX_COLUMN, cfg.REGIME_VIX_THRESHOLD)
+
+    models = models or sorted({m for ms in cfg.REGIME_EXPERTS.values() for m in ms if m in model_map})
+    params = {(r, m): _best_finite_params(cfg, r, m) for r in cfg.REGIMES for m in models}
+    print(f"models={models}  params found for: {[k for k, v in params.items() if v]}")
+    fit_fn = _make_fit_fn(cfg, model_map, models, params, accelerator)
     target_col = f"target_{cfg.PREDICTION_HORIZON}"
-    if target_col not in df_all.columns:
-        print(f"[エラー] ターゲット列 '{target_col}' がありません。")
-        return
-    
-    oof_predictions = pd.DataFrame(index=df_all.index)
-    oof_predictions['regime'] = df_all['regime']
-    oof_predictions['actual'] = df_all[target_col]
+    return walk_forward_oof(df, fit_fn, _predict_fn, target_col,
+                            int(v2["wf_min_train_rows"]), int(v2["wf_refit_every_rows"]))
 
-    # モデルのロードとキャッシュ
-    models_cache = {}
-    for regime in cfg.REGIMES:
-        models_cache[regime] = {}
-        experts = cfg.REGIME_EXPERTS.get(regime, [])
-        for model_name in experts:
-            try:
-                assets = loader.load_production_model(model_name, regime, use_swa=True)
-                predicter = ExpertPredicter(model_name, assets, cfg)
-                models_cache[regime][model_name] = predicter
-                print(f" -> ロード: {model_name}/{regime}")
-            except Exception as e:
-                print(f" ⚠️ {model_name}/{regime}: {e}")
 
-    # ウォークフォワード予測
-    # 直近N日に対して、その時点で利用可能なデータで予測
-    print("\n--- 予測実行 ---")
-    seq_len = cfg.SEQUENCE_LENGTH
-    
-    # 予測対象期間（データセットの後半50%）
-    n_samples = len(df_all)
-    start_idx = max(seq_len + 20, n_samples // 2)  # 少なくとも半分のデータで訓練されていると仮定
-    
-    for i in range(start_idx, n_samples):
-        if i % 50 == 0:
-            print(f"  Progress: {i}/{n_samples}")
-        
-        # その時点までのデータスライス
-        current_slice = df_all.iloc[:i+1]
-        current_regime = current_slice['regime'].iloc[-1]
-        current_date = df_all.index[i]
-        
-        regime_models = models_cache.get(current_regime, {})
-        
-        for model_name, predicter in regime_models.items():
-            try:
-                mu, sigma = predicter.predict(current_slice)
-                
-                col_name = f"pred_{model_name}"
-                if col_name not in oof_predictions.columns:
-                    oof_predictions[col_name] = np.nan
-                oof_predictions.loc[current_date, col_name] = mu
-                
-            except Exception as e:
-                # 通常は静かに失敗（シーケンス長不足など）
-                continue
+def _save(result: pd.DataFrame, timescale: str) -> Path:
+    base = PROJECT_ROOT / "logs" / f"{timescale}_walkforward"
+    base.mkdir(parents=True, exist_ok=True)
+    versions = [int(d.name.split("_")[1]) for d in base.iterdir()
+                if d.is_dir() and d.name.startswith("version_") and d.name.split("_")[1].isdigit()]
+    out_dir = base / f"version_{max(versions, default=-1) + 1}"
+    out_dir.mkdir()
+    path = out_dir / f"wf_results_{timescale}.csv"
+    result.to_csv(path)
+    result.to_csv(base / f"wf_results_{timescale}.csv")      # supervisor が読む最新版
+    return path
 
-    # 結果保存
-    print("\n--- 結果保存 ---")
-    base_output_dir = PROJECT_ROOT / "logs" / f"{timescale}_walkforward"
-    base_output_dir.mkdir(parents=True, exist_ok=True)
-    
-    # バージョン管理
-    existing_versions = [d for d in base_output_dir.iterdir() if d.is_dir() and d.name.startswith("version_")]
-    if existing_versions:
-        version_nums = [int(d.name.split("_")[1]) for d in existing_versions if d.name.split("_")[-1].isdigit()]
-        next_version = max(version_nums, default=0) + 1
-    else:
-        next_version = 0
-    
-    output_dir = base_output_dir / f"version_{next_version}"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    
-    pred_cols = [c for c in oof_predictions.columns if c.startswith('pred_')]
-    if pred_cols:
-        # 有効なサンプルのみ保存
-        result_df = oof_predictions.dropna(subset=['actual'], how='any')
-        result_df = result_df[result_df[pred_cols].notna().any(axis=1)]
-        
-        csv_path = output_dir / f"wf_results_{timescale}.csv"
-        result_df.to_csv(csv_path)
-        print(f"保存先: {csv_path}")
-        print(f"有効サンプル数: {len(result_df)}")
-        
-        # 最新版へのコピー
-        latest_csv = base_output_dir / f"wf_results_{timescale}.csv"
-        result_df.to_csv(latest_csv)
-        
-        # 精度レポート
-        print("\n--- 精度レポート ---")
-        for col in pred_cols:
-            valid = result_df[[col, 'actual']].dropna()
-            if len(valid) > 10:
-                corr = valid[col].corr(valid['actual'])
-                direction_match = ((valid[col] > 0) == (valid['actual'] > 0)).mean()
-                print(f"  {col}: Corr={corr:.4f}, Direction={direction_match:.2%}")
-    else:
-        print("有効な予測がありませんでした。")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--timescale", default="daily_2644t", help="Target timescale module")
-    args = parser.parse_args()
-    run_walk_forward(args.timescale)
+    ap = argparse.ArgumentParser(description="再学習つき拡大窓のウォークフォワード（真の OOF 予測）")
+    ap.add_argument("--timescale", default="daily_2644t")
+    ap.add_argument("--models", default=None, help="カンマ区切り（例: ridge）。省略時は REGIME_EXPERTS のすべて")
+    ap.add_argument("--accelerator", default="auto")
+    args = ap.parse_args()
+    res = run_walk_forward(args.timescale, args.models.split(",") if args.models else None, args.accelerator)
+    path = _save(res, args.timescale)
+    print(f"保存先: {path}  （{len(res)} 行）")
+    for col in [c for c in res.columns if c.startswith("pred_")]:
+        v = res[[col, "actual"]].dropna()
+        if len(v) > 10:
+            print(f"  {col}: Spearman={v[col].corr(v['actual'], method='spearman'):+.4f}  "
+                  f"Direction={((v[col] > 0) == (v['actual'] > 0)).mean():.2%}  n={len(v)}")

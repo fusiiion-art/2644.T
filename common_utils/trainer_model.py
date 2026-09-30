@@ -546,52 +546,50 @@ class ExpertTrainer:
     def train_production(self, best_params: Dict[str, Any], output_dir: Path, file_prefix: str):
         self._train_full_period(best_params, output_dir, is_production=True, file_prefix=file_prefix)
 
-    def _train_full_period(self, params: Dict[str, Any], output_dir: Path, is_production: bool, file_prefix: str = ""):
-        output_dir.mkdir(parents=True, exist_ok=True)
-        
-        train_params = self._parse_params(params)
+    def fit_in_memory(self, params: Dict[str, Any], accelerator: str = "auto") -> Optional[Dict[str, Any]]:
+        """ファイルに保存せず、self.df_regime 全体で最終モデルを学習して返す。
 
+        再学習つきウォークフォワード（analysis/walk_forward_validator.py、監査 G-9）用。
+        特徴量選択・scaler・シーケンス・モデル生成は _train_full_period と同じ関数を通る。
+        """
+        train_params, selected_features, scaler, X_seq, y_seq = self._prepare_final_fit(params)
+        if len(X_seq) < 2:
+            return None
+        model = self._make_final_model(train_params, selected_features, X_seq, y_seq)
+        loader = DataLoader(TensorDataset(X_seq, y_seq), batch_size=self.config.BATCH_SIZE, shuffle=True, num_workers=0)
+        trainer = pl.Trainer(
+            max_epochs=train_params.get('max_epochs', self.config.MAX_EPOCHS),
+            accelerator=accelerator, devices=1, logger=False,
+            enable_checkpointing=False, enable_progress_bar=False, enable_model_summary=False,
+            precision=getattr(self.config, 'PRECISION', 32),
+            gradient_clip_val=getattr(self.config, 'GRADIENT_CLIP_VAL', 0.5),
+            accumulate_grad_batches=getattr(self.config, 'ACCUMULATE_GRAD_BATCHES', 4)
+        )
+        trainer.fit(model, loader)
+        model.eval()
+        return {"model": model, "scaler": scaler, "features": selected_features, "seq_len": self.seq_len}
+
+    def _prepare_final_fit(self, params: Dict[str, Any]):
+        """最終学習用の特徴量選択・scaler・シーケンスを作る（_train_full_period と fit_in_memory で共有）。"""
+        train_params = self._parse_params(params)
         target_col = f"target_{self.config.PREDICTION_HORIZON}"
         n_features = train_params.get("n_features_to_select", len(self.all_feature_candidates))
-        
-        # 最終学習用の特徴量選択 (ここでもキャッシュがあれば使う)
-        # ただし、最終学習時は「全データ」を使いたいので、キャッシュとはキー(run_name)を変えるべきだが、
-        # ここでは一貫性のため同じ特徴量リストを使うのが安全。
-        # もし全データで再計算したければ、別のrun_nameを渡す。
-        # 今回は学習時のキャッシュ（直近80%での評価）をそのまま使う実装にする。
-        
-        # ★注意: 最終モデル作成時に特徴量を変えると、学習時と条件が変わるため、
-        # objectiveで選ばれた特徴量をそのまま使うのが鉄則。
-        
-        # なので、objectiveと同じデータセット（直近80%）での重要度ランキングを使って、
-        # 上位N個を選ぶのが正しい。
-        
+        # objective と同じデータセット（先頭80%）で選ぶ（詳細は _train_full_period のコメント）
         split_rfe = int(len(self.df_regime) * 0.8)
         X_rfe = self.df_regime[self.all_feature_candidates].iloc[:split_rfe]
         y_rfe = self.df_regime[target_col].iloc[:split_rfe]
-
         selected_features = select_features(self.config, X_rfe, y_rfe, n_features, self.run_name)
-        
-        prefix = f"{file_prefix}_" if file_prefix else ""
-        with open(output_dir / f"{prefix}features.json", 'w') as f:
-            json.dump(selected_features, f, indent=4)
-        
         # NaN/Inf をサニタイズしてからScalerに渡す
         X_raw = np.nan_to_num(self.df_regime[selected_features].values, nan=0.0, posinf=0.0, neginf=0.0)
         scaler = StandardScaler()
         X_scaled = scaler.fit_transform(X_raw)
-        joblib.dump(scaler, output_dir / f"{prefix}scaler.joblib")
-        
         X_seq, y_seq = self._create_sequences(X_scaled, self.df_regime[target_col].values)
-        if len(X_seq) < 2:
-            logging.warning(f"[{self.run_name}] Not enough sequence samples for training. Skipping final model training.")
-            return
-        loader = DataLoader(TensorDataset(X_seq, y_seq), batch_size=self.config.BATCH_SIZE, shuffle=True, num_workers=0)
-        
+        return train_params, selected_features, scaler, X_seq, y_seq
+
+    def _make_final_model(self, train_params: Dict[str, Any], selected_features: List[str], X_seq, y_seq):
         model_params = train_params.copy()
         model_params.pop('n_features_to_select', None)
         model_params.pop('max_epochs', None)
-        
         model = self.model_class(
             input_channels=len(selected_features),
             context_window=self.seq_len,
@@ -599,12 +597,29 @@ class ExpertTrainer:
             loss_type=getattr(self.config, 'LOSS_TYPE', 'mse'),  # ★Configから損失関数タイプを取得
             **model_params
         )
-
         # ★追加: LightGBM等のための手動学習トリガー
         if hasattr(model, "fit_lgbm"):
-            X_all_seq = X_seq.numpy()
-            y_all_seq = y_seq.numpy().ravel()
-            model.fit_lgbm(X_all_seq, y_all_seq)
+            model.fit_lgbm(X_seq.numpy(), y_seq.numpy().ravel())
+        return model
+
+    def _train_full_period(self, params: Dict[str, Any], output_dir: Path, is_production: bool, file_prefix: str = ""):
+        output_dir.mkdir(parents=True, exist_ok=True)
+
+        # 最終学習用の特徴量選択は objective と同じデータセット（先頭80%）での選択をそのまま使う。
+        # ★注意: 最終モデル作成時に特徴量を変えると、学習時と条件が変わるため、
+        # objectiveで選ばれた特徴量をそのまま使うのが鉄則。
+        train_params, selected_features, scaler, X_seq, y_seq = self._prepare_final_fit(params)
+
+        prefix = f"{file_prefix}_" if file_prefix else ""
+        with open(output_dir / f"{prefix}features.json", 'w') as f:
+            json.dump(selected_features, f, indent=4)
+        joblib.dump(scaler, output_dir / f"{prefix}scaler.joblib")
+
+        if len(X_seq) < 2:
+            logging.warning(f"[{self.run_name}] Not enough sequence samples for training. Skipping final model training.")
+            return
+        loader = DataLoader(TensorDataset(X_seq, y_seq), batch_size=self.config.BATCH_SIZE, shuffle=True, num_workers=0)
+        model = self._make_final_model(train_params, selected_features, X_seq, y_seq)
         
         # 【改善】StochasticWeightAveraging (SWA) を除外
         # 理由: weight_norm が適用されたレイヤーの deepcopy でエラー発生
