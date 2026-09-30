@@ -246,3 +246,23 @@ def infer_open_column(df: pd.DataFrame, open_col: Optional[str] = None) -> Optio
 
     logging.error("Unable to infer open column from dataframe. Please configure OPEN_COL.")
     return None
+
+
+def v2_forward_returns(prices: pd.DataFrame, horizons: List[int]) -> pd.DataFrame:
+    """v2 のラベル（設計書 v2 ラベリング設計・監査 G-1/B）。行 D（判断日 = 設計書の t+1）に直接置く。
+
+    prices は東京営業日（XTKS）で連続した index を持ち、分割調整済みの adj_open / adj_close を含むこと。
+    欠損営業日は NaN の行として残す（shift が営業日単位で正しく数えられるように）。
+
+    fwd_oc_{h}: ln(C[D+h-1] / O[D])  D の寄付で買い、h 営業日目の大引けで評価
+    fwd_oo_{h}: ln(O[D+h]   / O[D])  D の寄付で買い、h 営業日後の寄付で評価
+    gap       : ln(O[D] / C[D-1])    前営業日の大引け→D の寄付（判断時刻には未知。分析専用で特徴量にしない）
+    """
+    o = prices["adj_open"].astype(float)
+    c = prices["adj_close"].astype(float)
+    out = pd.DataFrame(index=prices.index)
+    for h in horizons:
+        out[f"fwd_oc_{h}"] = np.log(c.shift(-(h - 1)) / o)
+        out[f"fwd_oo_{h}"] = np.log(o.shift(-h) / o)
+    out["gap"] = np.log(o / c.shift(1))
+    return out.astype("float64")

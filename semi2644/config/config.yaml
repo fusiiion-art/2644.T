@@ -5,6 +5,26 @@ data:
   start: "2021-09-28"
   yfinance: {auto_adjust: false, actions: true, repair: false}
   overlap_days: 15
+  revision_rtol: 0.0001   # 重なり期間の過去値がこれ以上変わったら遡及調整とみなし全期間を取り直す
   jump_bounds: [0.55, 1.8]
 ops:
   exdiv_guard_days: 3
+v2:
+  # 判断時刻と各市場の「値が確定する時刻」（設計書 v2 タイムライン設計）
+  decision_time_jst: "08:50"
+  tokyo_open_jst: "09:00"
+  tokyo_close_jst_before: "15:00"
+  tokyo_close_jst_after: "15:30"
+  tokyo_close_change_date: "2024-11-05"
+  us_close_local: "16:00"          # America/New_York。夏時間は tz 変換に任せる
+  # FRED は ALFRED の realtime_start（公表日）の翌日 0:00 America/New_York に既知とみなす（公表時刻が不明なため保守的に）
+  fred_known_lag_days: 1
+  # 特徴量
+  ewma_vol_halflife: 20
+  momentum_windows: [5, 20]
+  ma_window: 25
+  # ラベル（フェーズ2の固定ホライズン比較用）
+  label_horizons: [1, 5, 20]
+  # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
+  wf_min_train_rows: 252
+  wf_refit_every_rows: 21
