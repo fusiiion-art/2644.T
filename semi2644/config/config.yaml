@@ -37,6 +37,22 @@ v2:
   position_add_on_drop: 0.04            # 前日終値が平均取得価格から4%以上下なら、寄付で100口買い増し（1日1回まで）
   round_trip_cost: 0.001                # 往復コスト c の初期値（0.10%）。建て・手仕舞いに半分ずつ
   # 利確指値は「平均取得価格 × (1 + g)」で全口まとめて置く（g は建てた日に決め、買い増しても変えない）
+  # モデル（フェーズ3。設計書 v2 モデル構成・評価設計）。特徴量選択はしない（試行数を増やさない）
+  model_features: [sox_ret_overnight, nvda_ret_overnight, tsm_ret_overnight, mu_ret_overnight, ndx_ret_overnight,
+                   sox_mom_5, sox_mom_20, vxn_close, semi_ret_1d, semi_intraday, semi_mom_5, semi_mom_20,
+                   semi_ewm_vol, semi_ma25_dev, n225_ret_1d, n225_mom_5]
+  model_interactions: [[sox_ret_overnight, vxn_close]]   # レジームは分割せず交差項で入れる
+  huber_epsilon: 1.5                    # Huber の δ（正規化後の単位）
+  huber_alpha_grid: [0.0001, 0.01, 1.0]
+  huber_max_iter: 1000
+  lgbm_params: {objective: huber, alpha: 1.5, num_leaves: 4, min_child_samples: 50, learning_rate: 0.02,
+                feature_fraction: 0.7, bagging_fraction: 0.7, bagging_freq: 1, n_estimators: 1000, seed: 0}
+  lgbm_early_stopping_rounds: 50
+  signal_k_grid: [0.0, 0.25, 0.5]       # BUY: μ̂ > c + k·σ̂√5
+  cpcv_n_groups: 6
+  cpcv_n_test_groups: 2
+  cpcv_embargo_days: 20                 # テスト区間（ラベル終端）の後ろを学習に使わない日数
+  dev_end: "2026-07-03"                 # 開発期間の終わり。これより後は凍結ホールドアウト
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21
