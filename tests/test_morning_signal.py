@@ -97,9 +97,9 @@ def test_no_orders_on_holiday_stale_data_or_split_after_entry():
     assert holiday["status"] == "holiday" and holiday["orders"] is None
     stale = build_signal(pd.Timestamp("2026-10-07"), p.loc[:"2026-10-02"], f, RULES, SESSIONS, splits=[])
     assert stale["status"] == "stale_data" and stale["orders"] is None
-    split = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=[pd.Timestamp("2026-10-01")])
+    split = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=[{"date": "2026-10-01", "ratio": 2.0}])
     assert split["status"] == "split_after_entry" and split["orders"] is None
-    ok = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=[pd.Timestamp("2026-09-01")])
+    ok = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=[{"date": "2026-09-01", "ratio": 2.0}])
     assert ok["status"] == "ok" and ok["orders"]["action"] == "hold"
 
 
@@ -194,3 +194,78 @@ def test_report_text_for_each_action():
     hold = format_report(build_signal(d, p, _fills([("2026-09-28", "buy", 100, 4900)]), RULES, SESSIONS, splits=[]), RULES)
     assert "4,998円 で売り指値" in hold and "買い増しはしない" in hold
     assert "休場" in format_report(build_signal(pd.Timestamp("2026-10-04"), p, _fills([]), RULES, SESSIONS, splits=[]), RULES)
+
+
+def test_split_row_in_fills_adjusts_the_position_and_resumes_signals():
+    """建てた後の分割は、約定記録に「分割日,split,比率,」の行を足せば口数×比率・価格÷比率に直して合図を再開する。"""
+    dates = pd.bdate_range("2026-09-21", "2026-10-09")
+    p = _prices(dates, np.full(len(dates), 2450.0))
+    split = [{"date": "2026-10-01", "ratio": 2.0}]
+    f = _fills([("2026-09-28", "buy", 100, 5000), ("2026-10-01", "split", 2, np.nan)])
+    s = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=split)
+    assert s["status"] == "ok"
+    assert s["state"]["units"] == 200 and s["state"]["avg_cost"] == pytest.approx(2500)
+    assert s["orders"]["action"] == "hold" and s["orders"]["sell_limit"] == 2550 and s["orders"]["sell_units"] == 200
+
+
+def test_no_orders_on_the_split_day_and_resume_the_next_morning():
+    """権利落ち日の朝は、前日終値が分割前の値か Yahoo が分割を反映した値か見分けられないので合図を出さない。
+    翌朝からは、約定記録に split の行があれば分割後の口数・価格で合図を出す。"""
+    dates = pd.bdate_range("2026-09-21", "2026-10-09")
+    closes = np.where(dates < pd.Timestamp("2026-10-07"), 5000.0, 2500.0)
+    p = _prices(dates, closes)
+    split = [{"date": "2026-10-07", "ratio": 2.0}]
+    f = _fills([("2026-09-28", "buy", 100, 5000), ("2026-10-07", "split", 2, np.nan)])
+    today = build_signal(pd.Timestamp("2026-10-07"), p, f, RULES, SESSIONS, splits=split)
+    assert today["status"] == "split_today" and today["orders"] is None
+    assert "権利落ち日" in format_report_text(today)
+    flat_today = build_signal(pd.Timestamp("2026-10-07"), p, _fills([]), RULES, SESSIONS, splits=split)
+    assert flat_today["status"] == "split_today"
+    nxt = build_signal(pd.Timestamp("2026-10-08"), p, f, RULES, SESSIONS, splits=split)
+    assert nxt["status"] == "ok" and nxt["prev_close"] == pytest.approx(2500)
+    assert nxt["state"]["units"] == 200 and nxt["state"]["avg_cost"] == pytest.approx(2500)
+    assert nxt["orders"]["sell_limit"] == 2550
+    missing = build_signal(pd.Timestamp("2026-10-08"), p, f.iloc[:1], RULES, SESSIONS, splits=split)
+    assert missing["status"] == "split_after_entry"
+    assert "2026-10-07,split,2," in format_report_text(missing)
+
+
+def format_report_text(sig):
+    from common_utils.morning_signal import format_report
+    return format_report(sig, RULES)
+
+
+def test_load_fills_accepts_split_rows(tmp_path):
+    from common_utils.morning_signal import load_fills
+    path = tmp_path / "fills.csv"
+    path.write_text("# comment\ndate,side,units,price\n2024-10-01,buy,100,5000\n2024-10-09,split,2,\n")
+    f = load_fills(path)
+    assert f["side"].tolist() == ["buy", "split"] and f["units"].tolist() == [100, 2]
+    path.write_text("date,side,units,price\n2024-10-01,hold,100,5000\n")
+    with pytest.raises(ValueError):
+        load_fills(path)
+
+
+def test_lots_count_purchases_not_units_so_a_split_keeps_the_lot_count():
+    """ロット数は買った量（買った時点の口数 ÷ 1ロット）で数える。シミュレータと同じく、分割で口数が増えてもロット数は変わらない。
+    一度に買った100口を2行（50口ずつ）に分けて書いても1ロット。"""
+    f = _fills([("2026-09-01", "buy", 100, 5000), ("2026-09-15", "split", 2, np.nan)])
+    s = position_state(f, pd.Timestamp("2026-10-01"), RULES.lot_units)
+    assert s["units"] == 200 and s["lots"] == 1
+    o = morning_orders(s, prev_close=2400.0, rules=RULES)                        # 2400 ≤ 2500 × 0.96
+    assert o["action"] == "add_on"
+    f2 = _fills([("2026-09-01", "buy", 50, 5000), ("2026-09-01", "buy", 50, 5000)])
+    assert position_state(f2, pd.Timestamp("2026-10-01"), RULES.lot_units)["lots"] == 1
+    f3 = pd.concat([f, _fills([("2026-09-16", "buy", 100, 2400), ("2026-09-17", "buy", 100, 2300)])], ignore_index=True)
+    s3 = position_state(f3, pd.Timestamp("2026-10-01"), RULES.lot_units)
+    assert s3["units"] == 400 and s3["lots"] == 3
+    assert morning_orders(s3, prev_close=1000.0, rules=RULES)["action"] == "hold"   # 3ロットで上限
+
+
+def test_report_says_when_the_loss_limit_cannot_be_reached():
+    from common_utils.morning_signal import format_report
+    dates = pd.bdate_range("2026-09-21", "2026-10-09")
+    p = _prices(dates, np.full(len(dates), 2400.0))
+    sig = build_signal(pd.Timestamp("2026-10-07"), p, _fills([("2026-09-28", "buy", 100, 2500)]), RULES, SESSIONS, splits=[])
+    text = format_report(sig, RULES)
+    assert "株価が0円でも損は250,000円" in text and "届く株価" not in text

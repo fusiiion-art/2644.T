@@ -2,58 +2,198 @@
 
 2644.T の翌朝判断の予測システムとして始めたプロジェクト。2026-10-01 に予測モデルの開発を終え、運用は予測を使わない売買ルールの「朝の合図」にした。
 
-## 現状（2026-10-01）
-
 - 予測モデル: 開発終了。フェーズ4の判定で不合格（DSR 0.008、PBO 0.69、毎朝買うだけのやり方にも、買う確率を合わせたランダム売買にも負けた）
-- 運用: 売買ルールの朝の合図（`ops/`）。毎朝買う・前日終値が平均取得価格の4%下なら買い増し・平均取得価格×1.02 の全口売り指値、上限300口。使い方は `ops/README.md`、値は `semi2644/config/config.yaml` の `ops` 節と `v2` 節の `position_*`
+- 運用: 売買ルールの朝の合図（下の「使い方ガイド」）。上限300口・利確の幅 g=2%
 - 一時は一定額保有（84万円を買ったまま持つ）に決めたが、同じ日に売買ルールの合図に戻した（記録は残してある）
 - 経緯と数字: `research/trial_log/`（`2026-10-01_phase4.md`・`2026-10-01_rule_variants.md`・`2026-10-01_fixed_amount.md`・`2026-10-01_operation_rule.md` など）
+
+本プロジェクトは情報提供・研究目的であり、投資助言ではありません。
+
+---
+
+## 使い方ガイド（朝の合図）
+
+平日の朝 8:30 に PC で動かし、9:00 の寄付の前に「今日の注文」を出す。注文を出すのは自分で、ツールは証券会社にはつながらない。
+
+### ルール
+
+| 朝の状態 | 今日の注文 |
+|---|---|
+| 未保有 | 寄付・成行で **100口 買う**。約定したら「約定価格 × 1.02」（呼値で切り上げ）に全口の売り指値を置く |
+| 保有中 | 「平均取得価格 × 1.02」に **全口の売り指値**を置いておく |
+| 保有中で、前日終値が平均取得価格の96%以下、かつ3ロット（300口）未満 | 上に加えて、**寄指（寄付のみ）で100口を買い増し**。指値は売り指値より1呼値安くする。買い増しが約定したら、売り指値を新しい平均取得価格 × 1.02 に置き直す |
+
+- 損切りと保有期限はない。売るのは売り指値が約定したときだけ
+- 寄付が売り指値以上なら、寄付で売りが約定し、その日は買い増しが約定しない。それがルールどおり
+- 合図どおりに売買すると、バックテストのシミュレータと同じ取引になることをテストで確かめている（`tests/test_morning_signal.py`）
+
+### 1. 準備（PC で最初に1回）
+
+1. **最新にする**
+
+   ```bat
+   cd /d c:\2644.T
+   git pull
+   ```
+
+2. **Python の環境を確かめる**: `c:\2644.T\.venv` に次が入っていること。足りなければ入れる
+
+   ```bat
+   c:\2644.T\.venv\Scripts\python.exe -m pip install pandas numpy pyarrow pyyaml requests yfinance fredapi exchange_calendars tzdata
+   ```
+
+   （fredapi は朝の合図では使わないが、データ取得のモジュールが読み込み時に必要とする）
+
+3. **呼値を確かめる**: 証券会社の発注画面で 2644 の呼値の単位（何円刻みか）を見る。1円でなければ `semi2644/config/config.yaml` の `ops:` の `tick_jpy: 1` を直す
+
+4. **約定記録を作る**: `ops\fills.example.csv` を `ops\fills.csv` にコピーし、例の2行（`2026-10-02,...` と `2026-10-05,...`）を消す。`#` の行と `date,side,units,price` の行は残す。すでに 2644 を持っているなら、その約定を書く（書き方は「3. 約定記録の書き方」）
+
+5. **手で1回動かす**
+
+   ```bat
+   c:\2644.T\ops\run_morning.bat
+   ```
+
+   Yahoo から 2644.T の日足を取り直して合図を作り、メモ帳で `ops\signals\latest.md` が開く。エラーになったら「5. 困ったとき」
+
+6. **毎朝自動で動くようにする**（平日 8:30。PC にログオンしているときに動く）
+
+   ```bat
+   schtasks /Create /TN "2644 morning signal" /TR "\"c:\2644.T\ops\run_morning.bat\"" /SC WEEKLY /D MON,TUE,WED,THU,FRI /ST 08:30
+   ```
+
+   - 確認: `schtasks /Query /TN "2644 morning signal"`
+   - 止める: `schtasks /Delete /TN "2644 morning signal" /F`
+   - 祝日も動くが、「今日は東証の休場日。注文はなし。」と出るだけ
+
+### 2. 毎朝の流れ
+
+1. 8:30 にメモ帳で合図が開く（過去の分は `ops\signals\<日付>.md` に残る）
+2. **「保有」の行が証券口座と同じか見る**（口数・平均取得価格）。違ったら約定記録の書き忘れか書き間違い
+3. 「今日の注文」どおりに、9:00 の寄付の前に注文する
+4. 寄付のあと、約定を `ops\fills.csv` に書く
+   - 寄付で買った日は、約定価格を見てすぐ売り指値を置く（合図の「前日終値なら ○円」は目安。実際は約定価格 × 1.02 を呼値で切り上げた値）
+   - 買い増しが約定した日は、売り指値を取り消して、新しい平均取得価格 × 1.02 で全口に置き直す
+5. 日中に売り指値が約定したら、それも `ops\fills.csv` に書く
+
+### 3. 約定記録の書き方（`ops\fills.csv`）
+
+1行1約定。`date,side,units,price`（約定日, buy か sell, 口数, 約定価格の円）。同じ日の約定は起きた順に書く。
+
+```csv
+date,side,units,price
+2026-10-02,buy,100,5010
+2026-10-05,buy,100,4790
+2026-10-08,sell,200,4998
+```
+
+- 全口売ったら未保有に戻り、次の朝はまた「100口 買う」になる
+- 1回の注文が分かれて約定したら、分かれたまま書いてよい（50口と50口でも1ロットと数える）
+- 保有中に分割があったら、「権利落ち日,split,比率,」の行を足す（例: `2024-10-09,split,2,`）。前の行は直さない。口数と平均取得価格は自動で直る。分割は `semi2644/config/corporate_actions.yaml` にも書いておく
+- 書き忘れ・書き間違いがあると、次の朝の注文がずれる。直したら `run_morning.bat` をもう一度動かせばよい
+- このファイルは個人の売買記録なので git に入れない（`.gitignore` 済み）。自分でバックアップする
+
+### 4. 合図の読み方
+
+```
+# 2644.T 朝の合図 2026-10-08
+
+前日終値（2026-10-07）: 4,790円
+保有: 100口（1ロット、上限 3ロット）、平均取得価格 5,010円、建てた日 2026-10-02
+含み損益（前日終値）: -22,000円。含み損は限界の660,000円に届かない（株価が0円でも損は501,000円）
+
+## 今日の注文
+1. 100口 を 5,111円 で売り指値（置いてあればそのまま）
+2. 寄指（寄付のみ）で 100口 を 5,110円 の買い指値（買い増し。前日終値が平均取得価格の96%以下のため）
+3. 買い増しが約定したら、1の売り指値を取り消し、新しい平均取得価格 × 1.02（呼値で切り上げ）で全口に置き直す（寄付が前日終値なら 4,998円）
+   寄付が1の売り指値以上なら、売りが約定して買い増しは約定しない。それがルールどおり
+```
+
+- 含み損が限界（66万円）の8割を超えると「警告」が出る。ルール上は何もしない（損切りはない）
+- 株価が0円になっても損が66万円に届かないときは「届かない」と出る
+
+### 5. 合図が出ないとき・困ったとき
+
+| 表示 | 意味とすること |
+|---|---|
+| 今日は東証の休場日 | 何もしない |
+| データが古い（前営業日の値が取れていない） | Yahoo の更新の遅れか通信の失敗。数分おいて `run_morning.bat` を動かし直す |
+| 今日は分割の権利落ち日 | 新しい注文は出さない。証券会社に置いた注文が取り消されていないか確認し、保有中なら `ops\fills.csv` に split の行を足す。翌朝から再開 |
+| 建てた後に分割がある | 表示された行（`日付,split,比率,`）を `ops\fills.csv` の最後に足して、動かし直す |
+| `価格キャッシュが無い` | 初回に Yahoo から取れなかった。ネットにつながっているか確かめて動かし直す |
+| `調整後も説明できない段差があります` | 分割など、`corporate_actions.yaml` に無い値の跳びがある。分割なら `corporate_actions.yaml` に足す（`- {date: "権利落ち日", type: split, ratio: 比率}`）。データの誤りなら翌日まで待つ |
+| `Required libraries are not installed` | 「1. 準備」の2のコマンドでライブラリを入れる |
+| メモ帳が開かない・朝に動いていない | `schtasks /Query` で登録を確かめる。PC が寝ていると動かない |
+
+### 6. 設定を変えたいとき
+
+`semi2644/config/config.yaml`（数値はここだけで管理する）
+
+| 項目 | 場所 | 今の値 |
+|---|---|---|
+| 呼値の単位 | `ops.tick_jpy` | 1円 |
+| 利確の幅 g | `ops.g` | 0.02 |
+| 1回の口数・上限・買い増しの下げ幅 | `v2.position_lot_units`・`position_max_units`・`position_add_on_drop` | 100口・300口・4% |
+| 含み損の限界・警告の割合 | `v2.fixed_loss_limit_jpy`・`ops.loss_warn_ratio` | 66万円・8割 |
+
+ルールの値（g・上限・買い増し幅）を変えたら、`research/trial_log/` に理由と日付を書く（開発規約）。
+
+### 7. 知っておくこと
+
+- 上限300口では、トレンドを除いた架空の値動きで、5年以内に含み損が66万円を超える割合が約75%（`research/trial_log/2026-10-01_operation_rule.md`）
+- 2021-09〜2026-07 の実データでは、このルールは同じ平均額を持ち続けた場合より年率が低く、最大ドローダウンが大きかった（`2026-10-01_rule_variants.md`）
+- 配当はルールにも損益にも入れていない
+- 指値は呼値で切り上げるので、バックテスト（切り上げなし）とわずかに違う
+
+---
 
 ## 構成
 
 | 場所 | 中身 |
 |---|---|
-| `ops/` | 朝の合図（`morning_signal.py`・`run_morning.bat`）、約定記録の書式（`fills.example.csv`）、使い方（`README.md`） |
-| `common_utils/morning_signal.py` | 約定記録から保有状態を作り、今日の注文を出す（シミュレータと同じ売買になることをテスト済み） |
+| `ops/` | 朝の合図（`morning_signal.py`・`run_morning.bat`）、約定記録の書式（`fills.example.csv`） |
+| `common_utils/morning_signal.py` | 約定記録から保有状態を作り、今日の注文を出す |
 | `data/adjust.py` | 価格の補正（分割）。補正はここ1か所だけ |
 | `data/cache/` | Yahoo・FRED の取得キャッシュ |
 | `common_utils/data_fetcher.py` | データ取得（キーは環境変数か `semi2644/config/secrets.env`） |
 | `generate/features_v2.py` | 判断時刻（D の 08:50 JST）基準のデータセット（特徴量・価格・ラベル） |
 | `common_utils/target_utils.py` | v2 のラベル |
-| `common_utils/position_simulator.py`・`rule_risk.py`・`fixed_amount.py` | 運用ルールと一定額保有の時価評価・リスク測定 |
+| `common_utils/position_simulator.py`・`rule_risk.py`・`fixed_amount.py` | 売買ルールと一定額保有の時価評価・リスク測定 |
 | `common_utils/selection_bias.py`・`cpcv.py` | DSR・PBO・CPCV（過学習の判定） |
-| `research/*.py` | 検証スクリプト（フェーズ2〜4、ルールのリスク、一定額保有の保有額） |
+| `research/*.py` | 検証スクリプト（フェーズ2〜4、ルールのリスク、上限口数、一定額保有） |
 | `research/trial_log/` | 試行の記録と結果 |
 | `research/v2_model/` | v2 モデル（不合格）。フェーズ3の結果を再現できるように動く状態で残す |
 | `research/legacy/` | 旧予測パイプライン。保守しないし、そのままでは動かない |
-| `audit/` | 監査報告（2026-09-30）と再現スクリプト。再現スクリプトは旧パイプラインに依存する |
+| `audit/` | 監査報告（2026-09-30）と再現スクリプト。再現スクリプトの一部は旧パイプラインに依存する（`audit/README.md`） |
 | `semi2644/` | 設定（`config/config.yaml`・`config/corporate_actions.yaml`）と東証カレンダー |
 | `logs/` | 旧パイプラインの学習結果（監査報告が参照するので残す） |
 | `tests/` | テスト |
 
-## 使い方
+## 開発者向け
 
 テスト:
 
-```bash
-c:/2644.T/.venv/Scripts/python.exe -m pytest -q tests
-cd semi2644 && c:/2644.T/.venv/Scripts/python.exe -m pytest -q
-```
-
-朝の合図（PC で平日 8:30。手順は `ops/README.md`）:
-
-```bash
-c:/2644.T/ops/run_morning.bat
+```bat
+c:\2644.T\.venv\Scripts\python.exe -m pytest -q tests
+cd semi2644 && c:\2644.T\.venv\Scripts\python.exe -m pytest -q
 ```
 
 検証の再実行（データは `data/cache/` を使う。結果は `research/trial_log/` に書く）:
 
-```bash
-c:/2644.T/.venv/Scripts/python.exe research/phase4_eval.py
-c:/2644.T/.venv/Scripts/python.exe research/rule_variants_report.py
-c:/2644.T/.venv/Scripts/python.exe research/fixed_amount_sizing.py
+```bat
+c:\2644.T\.venv\Scripts\python.exe research\phase4_eval.py
+c:\2644.T\.venv\Scripts\python.exe research\rule_variants_report.py
+c:\2644.T\.venv\Scripts\python.exe research\rule_limit_exceed.py
+c:\2644.T\.venv\Scripts\python.exe research\fixed_amount_sizing.py
 ```
 
-## 免責事項
+朝の合図を過去の日付で試す（取り直さず、研究用キャッシュで）:
 
-本プロジェクトは情報提供・研究目的であり、投資助言ではありません。
+```bat
+c:\2644.T\.venv\Scripts\python.exe ops\morning_signal.py --no-fetch --cache yf_data_daily_2644t.parquet --date 2026-07-03
+```
+
+## 残っている作業（任意）
+
+- 配当3件（2022-10・2024-04・2024-10）を `semi2644/config/corporate_actions.yaml` に記入する（Global X の分配金履歴から）
+- 半導体株の長い履歴（2000〜2002年・2008年を含む）で、含み損の大きさを確かめる（Yahoo への接続が必要）
