@@ -58,7 +58,7 @@ def main(argv=None) -> str:
     fills_path = Path(args.fills) if args.fills else ROOT / ops["fills_path"]
     fills = (load_fills(fills_path) if fills_path.exists()
              else pd.DataFrame({"date": pd.to_datetime([]), "side": [], "units": [], "price": []}))
-    splits = [pd.Timestamp(a["date"]) for a in get_splits(load_corporate_actions())]
+    splits = get_splits(load_corporate_actions())
     sessions = xtks_sessions(pd.Timestamp(cfg["data"]["start"]), day + pd.Timedelta(days=10))
 
     rules = SignalRules.from_config()
