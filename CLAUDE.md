@@ -2,7 +2,7 @@
 - index は東京営業日（tz-naive, 正規化日付）、列は float64。
 - 行 D（判断日 = t+1）には、判断時刻 decision_time_jst（D の 08:50 JST。`config/config.yaml` の v2 節）より前に known_at_jst が確定した情報のみ。約定は D の始値（寄付）。東証の大引けは 2024-11-04 まで 15:00、2024-11-05 から 15:30。
 - 価格の補正は `data/adjust.py` の1か所のみ。特徴量・ターゲット・バリアの約定判定は調整済み(adj_*)、発注価格（指値の円価格）は生値(raw_*)。
-- 数値パラメータは `config/config.yaml`（semi2644）または `config_model.py`＋`config_daily_2644t.py`（親）で一元管理。他ファイルでのハードコード禁止。
+- 数値パラメータは `semi2644/config/config.yaml` で一元管理。他ファイルでのハードコード禁止。（旧パイプラインの `config_model.py`・`config_daily_2644t.py` は 2026-10-01 に `research/legacy/` へ移した）
 - 新機能はテストを先に書く。先読みテストが落ちたら次に進まない。
 - 2644の実データ(2021-09〜)を見てパラメータを変えたら `research/trial_log` に記録。
 - 「成績を良くして」ではなく、バグ・先読み・コストの見落とし監査を依頼する。

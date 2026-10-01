@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT))
 sys.dont_write_bytecode = True
 
 from common_utils.position_simulator import PositionRules, simulate_positions, summarize  # noqa: E402
-from common_utils.trainer_v2 import run_nested_cpcv  # noqa: E402
+from research.v2_model.trainer_v2 import run_nested_cpcv  # noqa: E402
 from generate.features_v2 import build_v2_dataset, v2_config  # noqa: E402
 
 OUT = ROOT / "research" / "trial_log" / "phase3"
