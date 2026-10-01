@@ -1,0 +1,206 @@
+{
+  "capital_jpy": 1500000.0,
+  "loss_limit_jpy": 660000.0,
+  "wait_limit_days": 245,
+  "bootstrap_start_price": 5009.0,
+  "dev_period": [
+    "2021-09-28",
+    "2026-07-03"
+  ],
+  "methods": {
+    "hold": {
+      "history": {
+        "n": 185,
+        "worst_loss_min": -0.5163512720156405,
+        "worst_loss_p01": -0.5086510934393118,
+        "worst_loss_p05": -0.49049500019225434,
+        "worst_loss_median": -0.21385453100162977,
+        "p_below_start_over_wait": 0.21621621621621623,
+        "p_underwater_over_wait": 0.772972972972973,
+        "ann_return_median": 0.8892292279618177,
+        "final_pnl_p05": 1.0646698011614717,
+        "max_topup_p95": 0.0,
+        "max_topup_max": 0.0
+      },
+      "history_worst_start": "2024-03-04",
+      "bootstrap": {
+        "zero": {
+          "n": 1000,
+          "worst_loss_min": -0.9383496886489411,
+          "worst_loss_p01": -0.864956223584469,
+          "worst_loss_p05": -0.7873138509713158,
+          "worst_loss_median": -0.40787341147495226,
+          "p_below_start_over_wait": 0.547,
+          "p_underwater_over_wait": 0.957,
+          "ann_return_median": -0.0037740904288966707,
+          "final_pnl_p05": -0.7259739162101312,
+          "max_topup_p95": 0.0,
+          "max_topup_max": 0.0
+        },
+        "asis": {
+          "n": 1000,
+          "worst_loss_min": -0.8261147646014706,
+          "worst_loss_p01": -0.661158258566943,
+          "worst_loss_p05": -0.474220218477808,
+          "worst_loss_median": -0.13094473406209772,
+          "p_below_start_over_wait": 0.113,
+          "p_underwater_over_wait": 0.665,
+          "ann_return_median": 0.6642281313897228,
+          "final_pnl_p05": 0.20810571861466087,
+          "max_topup_p95": 0.0,
+          "max_topup_max": 0.0
+        }
+      },
+      "loss_per_amount": {
+        "history_worst": -0.5163512720156405,
+        "zero_p05": -0.7873138509713158,
+        "asis_p05": -0.474220218477808,
+        "zero_p01": -0.864956223584469,
+        "asis_p01": -0.661158258566943
+      },
+      "max_amount_jpy": {
+        "history_worst": 1278199.6206257208,
+        "zero_p05": 838293.393652039,
+        "asis_p05": 1391758.457955512,
+        "zero_p01": 763044.3969347847,
+        "asis_p01": 998248.1371866192
+      },
+      "fits_capital_with_topups": {
+        "history_worst": true,
+        "zero_p05": true,
+        "asis_p05": true,
+        "zero_p01": true,
+        "asis_p01": true
+      },
+      "p_loss_exceeds_limit_by_amount": {
+        "660000": {
+          "history_starts": 0.0,
+          "zero": 0.0,
+          "asis": 0.0
+        },
+        "763044": {
+          "history_starts": 0.0,
+          "zero": 0.01,
+          "asis": 0.0
+        },
+        "838293": {
+          "history_starts": 0.0,
+          "zero": 0.05,
+          "asis": 0.001
+        },
+        "998248": {
+          "history_starts": 0.0,
+          "zero": 0.172,
+          "asis": 0.01
+        },
+        "1278200": {
+          "history_starts": 0.0,
+          "zero": 0.354,
+          "asis": 0.04
+        },
+        "1391758": {
+          "history_starts": 0.08108108108108109,
+          "zero": 0.409,
+          "asis": 0.05
+        }
+      }
+    },
+    "monthly": {
+      "history": {
+        "n": 185,
+        "worst_loss_min": -0.6350487940476341,
+        "worst_loss_p01": -0.6201723316452535,
+        "worst_loss_p05": -0.5904799431390984,
+        "worst_loss_median": -0.1626654846098745,
+        "p_below_start_over_wait": 0.17297297297297298,
+        "p_underwater_over_wait": 0.7513513513513513,
+        "ann_return_median": 0.4876999273211799,
+        "final_pnl_p05": 0.9180266332643668,
+        "max_topup_p95": 0.4723972726161945,
+        "max_topup_max": 0.638083749282373
+      },
+      "history_worst_start": "2024-05-24",
+      "bootstrap": {
+        "zero": {
+          "n": 1000,
+          "worst_loss_min": -2.4019246547977673,
+          "worst_loss_p01": -1.7891762069697847,
+          "worst_loss_p05": -1.2542054900956032,
+          "worst_loss_median": -0.36894605723102813,
+          "p_below_start_over_wait": 0.428,
+          "p_underwater_over_wait": 0.939,
+          "ann_return_median": 0.059080809975318976,
+          "final_pnl_p05": -0.9892595274443181,
+          "max_topup_p95": 1.2085366268481945,
+          "max_topup_max": 2.325220352038741
+        },
+        "asis": {
+          "n": 1000,
+          "worst_loss_min": -1.4152396747658713,
+          "worst_loss_p01": -0.8546121343639698,
+          "worst_loss_p05": -0.5284987405538913,
+          "worst_loss_median": -0.10956006836602228,
+          "p_below_start_over_wait": 0.076,
+          "p_underwater_over_wait": 0.588,
+          "ann_return_median": 0.3608289375501045,
+          "final_pnl_p05": 0.48711408677936563,
+          "max_topup_p95": 0.4533444931256894,
+          "max_topup_max": 1.3150192610744398
+        }
+      },
+      "loss_per_amount": {
+        "history_worst": -0.6350487940476341,
+        "zero_p05": -1.2542054900956032,
+        "asis_p05": -0.5284987405538913,
+        "zero_p01": -1.7891762069697847,
+        "asis_p01": -0.8546121343639698
+      },
+      "max_amount_jpy": {
+        "history_worst": 1039290.2186197905,
+        "zero_p05": 526229.557446516,
+        "asis_p05": 1248820.3837691064,
+        "zero_p01": 368884.8518267524,
+        "asis_p01": 772280.1648389811
+      },
+      "fits_capital_with_topups": {
+        "history_worst": false,
+        "zero_p05": true,
+        "asis_p05": false,
+        "zero_p01": true,
+        "asis_p01": false
+      },
+      "p_loss_exceeds_limit_by_amount": {
+        "368885": {
+          "history_starts": 0.0,
+          "zero": 0.01,
+          "asis": 0.0
+        },
+        "526230": {
+          "history_starts": 0.0,
+          "zero": 0.05,
+          "asis": 0.001
+        },
+        "660000": {
+          "history_starts": 0.0,
+          "zero": 0.114,
+          "asis": 0.006
+        },
+        "772280": {
+          "history_starts": 0.0,
+          "zero": 0.164,
+          "asis": 0.01
+        },
+        "1039290": {
+          "history_starts": 0.0,
+          "zero": 0.28,
+          "asis": 0.033
+        },
+        "1248820": {
+          "history_starts": 0.10270270270270271,
+          "zero": 0.359,
+          "asis": 0.05
+        }
+      }
+    }
+  }
+}

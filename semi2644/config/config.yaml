@@ -53,6 +53,38 @@ v2:
   cpcv_n_test_groups: 2
   cpcv_embargo_days: 20                 # テスト区間（ラベル終端）の後ろを学習に使わない日数
   dev_end: "2026-07-03"                 # 開発期間の終わり。これより後は凍結ホールドアウト
+  # フェーズ4（短縮版、2026-10-01 ユーザー了承）: 新しい学習はせず、フェーズ3の出力で判定する
+  trading_days_per_year: 245
+  phase4_dsr_pass: 0.95                 # DSR がこれ以上で合格
+  phase4_pbo_pass: 0.3                  # PBO がこれ未満で合格
+  phase4_trials_before: 5326            # フェーズ3までの試行数の累計（DSR の N の土台）
+  phase4_baseline_g: [0.02, 0.04]       # ベースライン（毎朝買う・SOX 符号）の利確率
+  phase4_random_draws: 1000             # 買う確率をモデルに合わせたランダム売買の回数（帰無分布。試行数に数えない）
+  phase4_random_seed: 0
+  phase4_rolling_ic_window: 60
+  phase4_min_trades_per_year: 20
+  # 方向 C（2026-10-01）: 運用ルールの含み損リスクの測定。ルールは変えない
+  risk_scenario_drops: [0.1, 0.3, 0.5, 0.7]   # 建値からの下落率のシナリオ（買い増しは届いた分だけ約定）
+  position_max_hold_days: null          # 現行ルールは保有期限なし。変種でだけ使う（寄付で全口売り）
+  # ルールの変種（一覧表を作るだけで、最良は選ばない。ユーザーが許容額で選ぶ）。g は phase4_baseline_g
+  risk_variant_max_lots: [1, 2, 3]
+  risk_variant_max_hold_days: [null, 120, 245]
+  # ブロック・ブートストラップ（開発期間の 2644 の日次 OHLC 比を並べ替えた架空の値動き）
+  risk_bootstrap_paths: 1000
+  risk_bootstrap_days: 1225             # 5年分
+  risk_bootstrap_block_mean: 20         # 平均ブロック長（営業日）
+  risk_bootstrap_drifts: [zero, asis]   # zero = 上昇トレンドを除く、asis = 開発期間のまま
+  risk_bootstrap_seed: 0
+  # 一定額保有（2026-10-01 ユーザー決定: 買い増しルールをやめ、一定額を持ち続ける形に切り替える）
+  fixed_loss_limit_jpy: 660000          # 耐えられる含み損の限界（ユーザー回答「300口で約66万円が限界」）
+  fixed_wait_limit_days: 245            # 損が続いても待てる期間（ユーザー回答「1年まで」）
+  fixed_methods: {hold: null, monthly: 21}   # 買ったまま持つ / 21営業日ごとの寄付で金額に戻す
+  fixed_rolling_start_step: 5           # 実データで開始日をずらす間隔（営業日）
+  fixed_rolling_min_days: 245           # 開始日から開発期間の終わりまで最低これだけ残る日だけ使う
+  # 運用の決定（2026-10-01 ユーザー決定。research/trial_log/2026-10-01_fixed_amount.md）
+  fixed_amount_jpy: 840000              # 保有額。トレンドなしの架空の値動きで、5年以内に損が限界を超える割合は5%
+  fixed_method: hold                    # 買ったまま持つ（買い足さない・売らない）
+  fixed_wait_action: hold               # 1年たって買値を下回っていても売らない（放置）。fixed_wait_limit_days より優先
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21
