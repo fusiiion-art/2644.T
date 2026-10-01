@@ -1,0 +1,61 @@
+{
+  "loss_limit_jpy": 660000.0,
+  "start_price": 5009.0,
+  "lot_jpy": 500900.0,
+  "variants": [
+    {
+      "max_units": 100,
+      "g": 0.02,
+      "history_worst_unrealized_jpy": -255600.0,
+      "zero_p_exceed_limit": 0.0,
+      "zero_worst_unrealized_p05_jpy": -408729.014572548,
+      "asis_p_exceed_limit": 0.0,
+      "asis_worst_unrealized_p05_jpy": -317897.05083538295
+    },
+    {
+      "max_units": 100,
+      "g": 0.04,
+      "history_worst_unrealized_jpy": -256600.0,
+      "zero_p_exceed_limit": 0.0,
+      "zero_worst_unrealized_p05_jpy": -407709.1015818197,
+      "asis_p_exceed_limit": 0.0,
+      "asis_worst_unrealized_p05_jpy": -317881.5652234455
+    },
+    {
+      "max_units": 200,
+      "g": 0.02,
+      "history_worst_unrealized_jpy": -460200.0,
+      "zero_p_exceed_limit": 0.288,
+      "zero_worst_unrealized_p05_jpy": -810622.928576862,
+      "asis_p_exceed_limit": 0.027,
+      "asis_worst_unrealized_p05_jpy": -621037.0439773625
+    },
+    {
+      "max_units": 200,
+      "g": 0.04,
+      "history_worst_unrealized_jpy": -460200.0,
+      "zero_p_exceed_limit": 0.284,
+      "zero_worst_unrealized_p05_jpy": -808803.8829263835,
+      "asis_p_exceed_limit": 0.028,
+      "asis_worst_unrealized_p05_jpy": -624564.9981820781
+    },
+    {
+      "max_units": 300,
+      "g": 0.02,
+      "history_worst_unrealized_jpy": -662300.0000000001,
+      "zero_p_exceed_limit": 0.745,
+      "zero_worst_unrealized_p05_jpy": -1209280.4207228504,
+      "asis_p_exceed_limit": 0.324,
+      "asis_worst_unrealized_p05_jpy": -919182.3265191094
+    },
+    {
+      "max_units": 300,
+      "g": 0.04,
+      "history_worst_unrealized_jpy": -662300.0000000001,
+      "zero_p_exceed_limit": 0.761,
+      "zero_worst_unrealized_p05_jpy": -1209133.896185047,
+      "asis_p_exceed_limit": 0.333,
+      "asis_worst_unrealized_p05_jpy": -920691.9970724304
+    }
+  ]
+}

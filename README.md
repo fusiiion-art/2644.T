@@ -1,17 +1,20 @@
 # 2644.T
 
-2644.T の翌朝判断の予測システムとして始めたプロジェクト。2026-10-01 に予測モデルの開発を終え、運用は一定額保有に決めた。
+2644.T の翌朝判断の予測システムとして始めたプロジェクト。2026-10-01 に予測モデルの開発を終え、運用は予測を使わない売買ルールの「朝の合図」にした。
 
 ## 現状（2026-10-01）
 
 - 予測モデル: 開発終了。フェーズ4の判定で不合格（DSR 0.008、PBO 0.69、毎朝買うだけのやり方にも、買う確率を合わせたランダム売買にも負けた）
-- 運用: 84万円分を一度買い、買い足さず売らずに持ち続ける。1年たって買値を下回っていても売らない。値は `semi2644/config/config.yaml` の v2 節（`fixed_*`）
-- 経緯と数字: `research/trial_log/`（`2026-10-01_phase4.md`・`2026-10-01_rule_variants.md`・`2026-10-01_fixed_amount.md` など）
+- 運用: 売買ルールの朝の合図（`ops/`）。毎朝買う・前日終値が平均取得価格の4%下なら買い増し・平均取得価格×1.02 の全口売り指値、上限300口。使い方は `ops/README.md`、値は `semi2644/config/config.yaml` の `ops` 節と `v2` 節の `position_*`
+- 一時は一定額保有（84万円を買ったまま持つ）に決めたが、同じ日に売買ルールの合図に戻した（記録は残してある）
+- 経緯と数字: `research/trial_log/`（`2026-10-01_phase4.md`・`2026-10-01_rule_variants.md`・`2026-10-01_fixed_amount.md`・`2026-10-01_operation_rule.md` など）
 
 ## 構成
 
 | 場所 | 中身 |
 |---|---|
+| `ops/` | 朝の合図（`morning_signal.py`・`run_morning.bat`）、約定記録の書式（`fills.example.csv`）、使い方（`README.md`） |
+| `common_utils/morning_signal.py` | 約定記録から保有状態を作り、今日の注文を出す（シミュレータと同じ売買になることをテスト済み） |
 | `data/adjust.py` | 価格の補正（分割）。補正はここ1か所だけ |
 | `data/cache/` | Yahoo・FRED の取得キャッシュ |
 | `common_utils/data_fetcher.py` | データ取得（キーは環境変数か `semi2644/config/secrets.env`） |
@@ -35,6 +38,12 @@
 ```bash
 c:/2644.T/.venv/Scripts/python.exe -m pytest -q tests
 cd semi2644 && c:/2644.T/.venv/Scripts/python.exe -m pytest -q
+```
+
+朝の合図（PC で平日 8:30。手順は `ops/README.md`）:
+
+```bash
+c:/2644.T/ops/run_morning.bat
 ```
 
 検証の再実行（データは `data/cache/` を使う。結果は `research/trial_log/` に書く）:

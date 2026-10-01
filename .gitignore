@@ -4,3 +4,5 @@
 /mlflow.db
 /__pycache____pycache__/
 *.pyc
+ops/fills.csv
+ops/signals/
