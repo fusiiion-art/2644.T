@@ -6,7 +6,7 @@
   コスト込みの時価評価シャープの平均で選ぶ。LightGBM の木の本数は内側の検証グループで early stopping し、
   外側の最終学習では選ばれた g の中央値を使う。
 標準化は学習 fold の統計量だけ。重みは学習 fold 内の平均独自性（uniqueness）。特徴量選択はしない。
-旧パイプラインの common_utils/trainer_model.py とは独立（旧モデル群はフェーズ3で research/ へ移す）。
+フェーズ4（2026-10-01）で不合格。保守しないが、research/trial_log/phase3 の結果を再現できるように動く状態で残す。
 """
 from __future__ import annotations
 
@@ -18,13 +18,13 @@ import pandas as pd
 from sklearn.linear_model import HuberRegressor
 from sklearn.preprocessing import StandardScaler
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from common_utils.cpcv import CombinatorialPurgedCV, label_end_positions, uniqueness_weights  # noqa: E402
 from common_utils.position_simulator import PositionRules, simulate_positions, summarize  # noqa: E402
-from common_utils.signal_rule import buy_signal  # noqa: E402
+from research.v2_model.signal_rule import buy_signal  # noqa: E402
 from common_utils.target_utils import v2_barrier_labels  # noqa: E402
 
 

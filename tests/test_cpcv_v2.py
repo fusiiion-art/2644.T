@@ -12,8 +12,8 @@ import pandas as pd
 import pytest
 
 from common_utils.cpcv import CombinatorialPurgedCV, label_end_positions, uniqueness_weights
-from common_utils.signal_rule import buy_signal
-from common_utils.trainer_v2 import fit_huber, run_nested_cpcv
+from research.v2_model.signal_rule import buy_signal
+from research.v2_model.trainer_v2 import fit_huber, run_nested_cpcv
 
 
 def _ends(n, rng, max_span=20):
