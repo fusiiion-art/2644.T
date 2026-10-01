@@ -75,6 +75,12 @@ v2:
   risk_bootstrap_block_mean: 20         # 平均ブロック長（営業日）
   risk_bootstrap_drifts: [zero, asis]   # zero = 上昇トレンドを除く、asis = 開発期間のまま
   risk_bootstrap_seed: 0
+  # 一定額保有（2026-10-01 ユーザー決定: 買い増しルールをやめ、一定額を持ち続ける形に切り替える）
+  fixed_loss_limit_jpy: 660000          # 耐えられる含み損の限界（ユーザー回答「300口で約66万円が限界」）
+  fixed_wait_limit_days: 245            # 損が続いても待てる期間（ユーザー回答「1年まで」）
+  fixed_methods: {hold: null, monthly: 21}   # 買ったまま持つ / 21営業日ごとの寄付で金額に戻す
+  fixed_rolling_start_step: 5           # 実データで開始日をずらす間隔（営業日）
+  fixed_rolling_min_days: 245           # 開始日から開発期間の終わりまで最低これだけ残る日だけ使う
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21
