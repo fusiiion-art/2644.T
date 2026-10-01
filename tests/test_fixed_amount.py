@@ -71,8 +71,9 @@ def test_missing_prices_are_rejected():
         simulate_fixed_amount(_p([100, np.nan, 90], [100, 95, 90]), 1000, 2000, 0.002, None)
 
 
-def test_config_records_the_users_fixed_amount_decision():
-    """2026-10-01 のユーザー決定（保有額84万円・買ったまま持つ・1年たっても売らない）が config と食い違わないこと。"""
+def test_config_keeps_the_superseded_fixed_amount_decision():
+    """2026-10-01 のユーザー決定（保有額84万円・買ったまま持つ・1年たっても売らない）の記録が壊れていないこと。
+    同じ日のうちに売買ルールの合図に戻した（ops 節）ので、運用には使わない。"""
     from data.adjust import load_price_config
     cfg = load_price_config()
     v2 = cfg["v2"]

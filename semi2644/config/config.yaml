@@ -9,6 +9,15 @@ data:
   jump_bounds: [0.55, 1.8]
 ops:
   exdiv_guard_days: 3
+  # 朝の合図（2026-10-01 ユーザー決定: 一定額保有をやめ、売買ルールの合図に戻す。上限300口・g=2%）
+  # 口数・上限・買い増し幅は v2 節の position_*、含み損の限界は v2 節の fixed_loss_limit_jpy を使う
+  mode: rule                            # 毎朝買う・4%下で買い増し・平均取得価格×(1+g) の売り指値。予測モデルは使わない
+  g: 0.02
+  tick_jpy: 1                           # 呼値の単位（円）。証券会社の発注画面で確認して直す（2025-05-07 から ETF の呼値テーブルが変わった）
+  loss_warn_ratio: 0.8                  # 含み損が限界のこの割合を超えたら警告
+  cache_filename: yf_2644t_ops.parquet  # 研究用キャッシュとは別のファイル（同じだと他の銘柄の列が消える）
+  fills_path: ops/fills.csv             # 自分の約定記録（git には入れない）
+  signals_dir: ops/signals              # 毎朝の合図の保存先（git には入れない）
 v2:
   # 判断時刻と各市場の「値が確定する時刻」（設計書 v2 タイムライン設計）
   decision_time_jst: "08:50"
@@ -81,7 +90,7 @@ v2:
   fixed_methods: {hold: null, monthly: 21}   # 買ったまま持つ / 21営業日ごとの寄付で金額に戻す
   fixed_rolling_start_step: 5           # 実データで開始日をずらす間隔（営業日）
   fixed_rolling_min_days: 245           # 開始日から開発期間の終わりまで最低これだけ残る日だけ使う
-  # 運用の決定（2026-10-01 ユーザー決定。research/trial_log/2026-10-01_fixed_amount.md）
+  # 運用の決定（2026-10-01 ユーザー決定。research/trial_log/2026-10-01_fixed_amount.md）。同じ日に ops 節の売買ルールの合図に置き換えた。記録として残す
   fixed_amount_jpy: 840000              # 保有額。トレンドなしの架空の値動きで、5年以内に損が限界を超える割合は5%
   fixed_method: hold                    # 買ったまま持つ（買い足さない・売らない）
   fixed_wait_action: hold               # 1年たって買値を下回っていても売らない（放置）。fixed_wait_limit_days より優先
