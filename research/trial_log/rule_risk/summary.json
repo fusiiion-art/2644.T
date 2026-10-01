@@ -1,0 +1,432 @@
+{
+  "dev_period": [
+    "2021-09-28",
+    "2026-07-03"
+  ],
+  "capital_jpy": 1500000.0,
+  "rule": {
+    "lot_units": 100,
+    "max_units": 300,
+    "add_on_drop": 0.04,
+    "round_trip_cost": 0.001
+  },
+  "always_buy": {
+    "g0.02": {
+      "days": 1166,
+      "days_at_max_lots": 751,
+      "share_days_at_max_lots": 0.644082332761578,
+      "longest_run_at_max_lots": 321,
+      "worst_unrealized_jpy": -662300.0000000001,
+      "worst_unrealized_date": "2025-04-07",
+      "worst_unrealized_share_of_capital": -0.4415333333333334,
+      "max_invested_jpy": 1484800.0,
+      "max_invested_share_of_capital": 0.9898666666666667,
+      "longest_hold_days": 332,
+      "trades_reaching_max_lots": 14,
+      "longest_underwater_days": 302,
+      "sharpe": 0.7194144431624575,
+      "ann_return_on_capital": 0.14599542071469418,
+      "max_drawdown_jpy": -663750.7500000001,
+      "n_trades": 86,
+      "capped_trades": [
+        {
+          "entry_date": "2024-07-12",
+          "exit_date": "2025-10-06",
+          "holding_days": 301,
+          "max_invested_jpy": 1404500.0,
+          "worst_low_ret": -0.4929156283374867,
+          "worst_unrealized_jpy": -662300.0000000001,
+          "pnl_jpy": 37076.24999999991,
+          "pnl_per_year_on_invested": 0.021486894284980948
+        },
+        {
+          "entry_date": "2022-01-05",
+          "exit_date": "2023-05-16",
+          "holding_days": 332,
+          "max_invested_jpy": 764800.0,
+          "worst_low_ret": -0.28255753138075324,
+          "worst_unrealized_jpy": -211600.00000000006,
+          "pnl_jpy": 14523.552000000003,
+          "pnl_per_year_on_invested": 0.01401370481927711
+        },
+        {
+          "entry_date": "2026-02-26",
+          "exit_date": "2026-04-10",
+          "holding_days": 31,
+          "max_invested_jpy": 1020100.0,
+          "worst_low_ret": -0.1621409665719048,
+          "worst_unrealized_jpy": -147100.00000000006,
+          "pnl_jpy": 19371.699,
+          "pnl_per_year_on_invested": 0.15008225806451614
+        },
+        {
+          "entry_date": "2024-04-15",
+          "exit_date": "2024-05-07",
+          "holding_days": 14,
+          "max_invested_jpy": 1394500.0,
+          "worst_low_ret": -0.08246683399067756,
+          "worst_unrealized_jpy": -105999.99999999991,
+          "pnl_jpy": 26481.555000000146,
+          "pnl_per_year_on_invested": 0.3323250000000018
+        },
+        {
+          "entry_date": "2026-05-15",
+          "exit_date": "2026-05-25",
+          "holding_days": 7,
+          "max_invested_jpy": 1174900.0,
+          "worst_low_ret": -0.09634862541492895,
+          "worst_unrealized_jpy": -88900.00000000004,
+          "pnl_jpy": 34107.44999999995,
+          "pnl_per_year_on_invested": 1.016053068346241
+        },
+        {
+          "entry_date": "2023-08-01",
+          "exit_date": "2023-10-12",
+          "holding_days": 50,
+          "max_invested_jpy": 966500.0,
+          "worst_low_ret": -0.088670460424211,
+          "worst_unrealized_jpy": -74599.99999999996,
+          "pnl_jpy": 18353.835000000017,
+          "pnl_per_year_on_invested": 0.09305100000000008
+        },
+        {
+          "entry_date": "2023-10-13",
+          "exit_date": "2023-11-06",
+          "holding_days": 16,
+          "max_invested_jpy": 944500.0,
+          "worst_low_ret": -0.07887771307570146,
+          "worst_unrealized_jpy": -69400.00000000004,
+          "pnl_jpy": 26541.749999999956,
+          "pnl_per_year_on_invested": 0.4303023259661189
+        },
+        {
+          "entry_date": "2021-09-28",
+          "exit_date": "2021-11-02",
+          "holding_days": 26,
+          "max_invested_jpy": 711900.0,
+          "worst_low_ret": -0.11125158027812898,
+          "worst_unrealized_jpy": -66000.0,
+          "pnl_jpy": 13518.98100000001,
+          "pnl_per_year_on_invested": 0.1789442307692309
+        },
+        {
+          "entry_date": "2025-11-11",
+          "exit_date": "2025-12-04",
+          "holding_days": 17,
+          "max_invested_jpy": 739700.0,
+          "worst_low_ret": -0.08787346221441117,
+          "worst_unrealized_jpy": -57499.999999999956,
+          "pnl_jpy": 14046.903000000051,
+          "pnl_per_year_on_invested": 0.2736794117647069
+        },
+        {
+          "entry_date": "2026-06-19",
+          "exit_date": "2026-07-01",
+          "holding_days": 9,
+          "max_invested_jpy": 1484800.0,
+          "worst_low_ret": -0.0760371767241379,
+          "worst_unrealized_jpy": -49599.99999999991,
+          "pnl_jpy": 62883.00000000009,
+          "pnl_per_year_on_invested": 1.1528926454741395
+        },
+        {
+          "entry_date": "2026-01-29",
+          "exit_date": "2026-02-09",
+          "holding_days": 8,
+          "max_invested_jpy": 954000.0,
+          "worst_low_ret": -0.06568887501950382,
+          "worst_unrealized_jpy": -41300.0,
+          "pnl_jpy": 43423.8,
+          "pnl_per_year_on_invested": 1.3939768081761006
+        },
+        {
+          "entry_date": "2025-12-10",
+          "exit_date": "2025-12-24",
+          "holding_days": 11,
+          "max_invested_jpy": 747100.0,
+          "worst_low_ret": -0.055548119394994044,
+          "worst_unrealized_jpy": -36100.000000000044,
+          "pnl_jpy": 14187.429000000053,
+          "pnl_per_year_on_invested": 0.4229590909090925
+        },
+        {
+          "entry_date": "2025-10-07",
+          "exit_date": "2025-10-21",
+          "holding_days": 10,
+          "max_invested_jpy": 715900.0,
+          "worst_low_ret": -0.07289107289107288,
+          "worst_unrealized_jpy": -34000.0,
+          "pnl_jpy": 19573.949999999957,
+          "pnl_per_year_on_invested": 0.6698725729850523
+        },
+        {
+          "entry_date": "2023-07-04",
+          "exit_date": "2023-07-18",
+          "holding_days": 10,
+          "max_invested_jpy": 970500.0,
+          "worst_low_ret": -0.05547226386806592,
+          "worst_unrealized_jpy": -30500.0,
+          "pnl_jpy": 18429.79500000008,
+          "pnl_per_year_on_invested": 0.465255000000002
+        }
+      ],
+      "pnl_by_year_jpy": {
+        "2021": 51346.50700000001,
+        "2022": -143920.50000000006,
+        "2023": 370304.1480000003,
+        "2024": -60936.280000000144,
+        "2025": 468137.899,
+        "2026": 357296.7600000001
+      },
+      "worst_unrealized_by_year_jpy": {
+        "2021": -66000.0,
+        "2022": -211600.00000000006,
+        "2023": -165700.00000000006,
+        "2024": -467000.0000000001,
+        "2025": -662300.0000000001,
+        "2026": -147100.00000000006
+      }
+    },
+    "g0.04": {
+      "days": 1166,
+      "days_at_max_lots": 795,
+      "share_days_at_max_lots": 0.6818181818181818,
+      "longest_run_at_max_lots": 322,
+      "worst_unrealized_jpy": -662300.0000000001,
+      "worst_unrealized_date": "2025-04-07",
+      "worst_unrealized_share_of_capital": -0.4415333333333334,
+      "max_invested_jpy": 1484800.0,
+      "max_invested_share_of_capital": 0.9898666666666667,
+      "longest_hold_days": 337,
+      "trades_reaching_max_lots": 13,
+      "longest_underwater_days": 302,
+      "sharpe": 0.7812716335632001,
+      "ann_return_on_capital": 0.162815772584334,
+      "max_drawdown_jpy": -680750.7500000001,
+      "n_trades": 46,
+      "capped_trades": [
+        {
+          "entry_date": "2024-07-05",
+          "exit_date": "2025-10-06",
+          "holding_days": 306,
+          "max_invested_jpy": 1404500.0,
+          "worst_low_ret": -0.4929156283374867,
+          "worst_unrealized_jpy": -662300.0000000001,
+          "pnl_jpy": 54747.40999999993,
+          "pnl_per_year_on_invested": 0.031209477124182965
+        },
+        {
+          "entry_date": "2021-12-28",
+          "exit_date": "2023-05-17",
+          "holding_days": 337,
+          "max_invested_jpy": 763100.0,
+          "worst_low_ret": -0.2809592451841174,
+          "worst_unrealized_jpy": -209899.99999999994,
+          "pnl_jpy": 29745.638000000068,
+          "pnl_per_year_on_invested": 0.028338575667655852
+        },
+        {
+          "entry_date": "2026-02-26",
+          "exit_date": "2026-04-14",
+          "holding_days": 33,
+          "max_invested_jpy": 1020100.0,
+          "worst_low_ret": -0.1621409665719048,
+          "worst_unrealized_jpy": -147100.00000000006,
+          "pnl_jpy": 44756.999999999956,
+          "pnl_per_year_on_invested": 0.32573945513363184
+        },
+        {
+          "entry_date": "2024-03-22",
+          "exit_date": "2024-05-16",
+          "holding_days": 37,
+          "max_invested_jpy": 1396500.0,
+          "worst_low_ret": -0.08378088077336199,
+          "worst_unrealized_jpy": -108000.0,
+          "pnl_jpy": 54435.56999999994,
+          "pnl_per_year_on_invested": 0.25811081081081055
+        },
+        {
+          "entry_date": "2023-08-02",
+          "exit_date": "2023-11-13",
+          "holding_days": 70,
+          "max_invested_jpy": 964500.0,
+          "worst_low_ret": -0.09797822706065318,
+          "worst_unrealized_jpy": -89400.0,
+          "pnl_jpy": 50010.0,
+          "pnl_per_year_on_invested": 0.18147744945567654
+        },
+        {
+          "entry_date": "2026-05-12",
+          "exit_date": "2026-05-25",
+          "holding_days": 10,
+          "max_invested_jpy": 1171500.0,
+          "worst_low_ret": -0.09372599231754164,
+          "worst_unrealized_jpy": -85500.0,
+          "pnl_jpy": 45665.07000000008,
+          "pnl_per_year_on_invested": 0.9550100000000018
+        },
+        {
+          "entry_date": "2021-09-28",
+          "exit_date": "2021-11-04",
+          "holding_days": 27,
+          "max_invested_jpy": 711900.0,
+          "worst_low_ret": -0.11125158027812898,
+          "worst_unrealized_jpy": -66000.0,
+          "pnl_jpy": 27749.862000000023,
+          "pnl_per_year_on_invested": 0.3537074074074077
+        },
+        {
+          "entry_date": "2026-06-19",
+          "exit_date": "2026-07-01",
+          "holding_days": 9,
+          "max_invested_jpy": 1484800.0,
+          "worst_low_ret": -0.0760371767241379,
+          "worst_unrealized_jpy": -49599.99999999991,
+          "pnl_jpy": 62883.00000000009,
+          "pnl_per_year_on_invested": 1.1528926454741395
+        },
+        {
+          "entry_date": "2024-03-05",
+          "exit_date": "2024-03-21",
+          "holding_days": 12,
+          "max_invested_jpy": 1428500.0,
+          "worst_low_ret": -0.07936507936507942,
+          "worst_unrealized_jpy": -48500.0,
+          "pnl_jpy": 55682.930000000146,
+          "pnl_per_year_on_invested": 0.7958416666666689
+        },
+        {
+          "entry_date": "2025-11-05",
+          "exit_date": "2025-12-04",
+          "holding_days": 21,
+          "max_invested_jpy": 723100.0,
+          "worst_low_ret": -0.06693403402019094,
+          "worst_unrealized_jpy": -40900.000000000044,
+          "pnl_jpy": 28186.43800000002,
+          "pnl_per_year_on_invested": 0.454766666666667
+        },
+        {
+          "entry_date": "2025-12-10",
+          "exit_date": "2025-12-26",
+          "holding_days": 13,
+          "max_invested_jpy": 747100.0,
+          "worst_low_ret": -0.055548119394994044,
+          "worst_unrealized_jpy": -36100.000000000044,
+          "pnl_jpy": 29121.95799999997,
+          "pnl_per_year_on_invested": 0.7346230769230762
+        },
+        {
+          "entry_date": "2025-10-07",
+          "exit_date": "2025-10-29",
+          "holding_days": 16,
+          "max_invested_jpy": 715900.0,
+          "worst_low_ret": -0.07289107289107288,
+          "worst_unrealized_jpy": -34000.0,
+          "pnl_jpy": 27905.782000000014,
+          "pnl_per_year_on_invested": 0.5968812500000003
+        },
+        {
+          "entry_date": "2023-07-04",
+          "exit_date": "2023-08-01",
+          "holding_days": 20,
+          "max_invested_jpy": 970500.0,
+          "worst_low_ret": -0.05547226386806592,
+          "worst_unrealized_jpy": -30500.0,
+          "pnl_jpy": 37830.090000000026,
+          "pnl_per_year_on_invested": 0.4775050000000004
+        }
+      ],
+      "pnl_by_year_jpy": {
+        "2021": 69751.6800000001,
+        "2022": -151348.14999999994,
+        "2023": 406476.64000000013,
+        "2024": -57082.0799999999,
+        "2025": 502026.8819999999,
+        "2026": 392480.27800000017
+      },
+      "worst_unrealized_by_year_jpy": {
+        "2021": -66000.0,
+        "2022": -209899.99999999994,
+        "2023": -163999.99999999994,
+        "2024": -467000.0000000001,
+        "2025": -662300.0000000001,
+        "2026": -147100.00000000006
+      }
+    }
+  },
+  "price_at_dev_end_raw": 5009.0,
+  "averaging_down_levels": [
+    {
+      "lots": 1,
+      "buy_at": 1.0,
+      "avg": 1.0
+    },
+    {
+      "lots": 2,
+      "buy_at": 0.96,
+      "avg": 0.98
+    },
+    {
+      "lots": 3,
+      "buy_at": 0.9408,
+      "avg": 0.9669333333333333
+    }
+  ],
+  "full_three_lots_cost_jpy_at_dev_end_price": 1453010.72,
+  "price_where_three_lots_exceed_capital": 5170.987313844457,
+  "raw_close_max_in_dev": 5210.0,
+  "scenarios_at_dev_end_price": [
+    {
+      "drop": 0.1,
+      "lots": 3,
+      "units": 300,
+      "invested_jpy": 1453010.72,
+      "unrealized_jpy": -100580.71999999997,
+      "share_of_capital": -0.06705381333333331,
+      "avg_vs_entry": 0.9669333333333333,
+      "exit_level_vs_entry": {
+        "g0.02": 0.986272,
+        "g0.04": 1.0056106666666667
+      }
+    },
+    {
+      "drop": 0.3,
+      "lots": 3,
+      "units": 300,
+      "invested_jpy": 1453010.72,
+      "unrealized_jpy": -401120.72,
+      "share_of_capital": -0.2674138133333333,
+      "avg_vs_entry": 0.9669333333333333,
+      "exit_level_vs_entry": {
+        "g0.02": 0.986272,
+        "g0.04": 1.0056106666666667
+      }
+    },
+    {
+      "drop": 0.5,
+      "lots": 3,
+      "units": 300,
+      "invested_jpy": 1453010.72,
+      "unrealized_jpy": -701660.72,
+      "share_of_capital": -0.4677738133333333,
+      "avg_vs_entry": 0.9669333333333333,
+      "exit_level_vs_entry": {
+        "g0.02": 0.986272,
+        "g0.04": 1.0056106666666667
+      }
+    },
+    {
+      "drop": 0.7,
+      "lots": 3,
+      "units": 300,
+      "invested_jpy": 1453010.72,
+      "unrealized_jpy": -1002200.72,
+      "share_of_capital": -0.6681338133333333,
+      "avg_vs_entry": 0.9669333333333333,
+      "exit_level_vs_entry": {
+        "g0.02": 0.986272,
+        "g0.04": 1.0056106666666667
+      }
+    }
+  ]
+}

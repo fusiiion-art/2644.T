@@ -63,6 +63,8 @@ v2:
   phase4_random_seed: 0
   phase4_rolling_ic_window: 60
   phase4_min_trades_per_year: 20
+  # 方向 C（2026-10-01）: 運用ルールの含み損リスクの測定。ルールは変えない
+  risk_scenario_drops: [0.1, 0.3, 0.5, 0.7]   # 建値からの下落率のシナリオ（買い増しは届いた分だけ約定）
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21
