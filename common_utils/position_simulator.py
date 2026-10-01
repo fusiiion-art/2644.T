@@ -5,7 +5,10 @@
   保有中なら、前日終値が 平均取得価格 × (1 − add_on_drop) 以下で上限未満のとき、寄付で1ロット買い増す
   （1日1回まで。指値は新しい平均取得価格 × (1 + g) で全口まとめて置き直す。g は建てた日の値を保つ）。
 - 場中: 始値が指値以上なら始値で、日中の高値が指値に届けば指値で全口を売る（寄付で指値を超えた日は買い増さない）。
-- 損切り・保有期限はない。毎日の損益は未決済分の含み損益の変化も含む（時価評価）。
+- 損切りはない。保有期限も現行ルールにはない（max_hold_days = None）。方向 C の変種として max_hold_days を
+  与えると、建てた日から数えてその日数を持った次の朝に、寄付で全口を売る（その朝は買い増ししない）。
+- lot_jpy を与えると1ロットを金額で決める（方向 C のブートストラップ用。現行ルールは口数固定で None）。
+- 毎日の損益は未決済分の含み損益の変化も含む（時価評価）。
 - 約定判定は調整済み価格（adj_*）。1ロットは生の口数で数え、調整済みの口数は lot × raw_open / adj_open
   （分割前の100口 = 調整済み200口分）。これで円の金額は実額と一致する。
 - コストは往復コスト c を建て・手仕舞いの約定代金に半分ずつ課す。
@@ -32,6 +35,8 @@ class PositionRules:
     add_on_drop: float
     round_trip_cost: float
     capital_jpy: float
+    max_hold_days: int | None = None
+    lot_jpy: float | None = None          # 変種のみ: 1ロットを金額で決める（口数 = lot_jpy ÷ 寄付の価格）
 
     @property
     def max_lots(self) -> int:
@@ -44,7 +49,8 @@ class PositionRules:
         v2 = cfg["v2"]
         return cls(lot_units=int(v2["position_lot_units"]), max_units=int(v2["position_max_units"]),
                    add_on_drop=float(v2["position_add_on_drop"]), round_trip_cost=float(v2["round_trip_cost"]),
-                   capital_jpy=float(cfg["capital_jpy"]))
+                   capital_jpy=float(cfg["capital_jpy"]),
+                   max_hold_days=None if v2.get("position_max_hold_days") is None else int(v2["position_max_hold_days"]))
 
 
 def simulate_positions(prices: pd.DataFrame, buy_signal: pd.Series, g, rules: PositionRules):
@@ -73,7 +79,7 @@ def simulate_positions(prices: pd.DataFrame, buy_signal: pd.Series, g, rules: Po
 
     def buy(i):
         nonlocal units, avg, lots, cost_cum
-        q = rules.lot_units * raw_o[i] / o[i]
+        q = rules.lot_jpy / o[i] if rules.lot_jpy is not None else rules.lot_units * raw_o[i] / o[i]
         avg = o[i] if units == 0 else (units * avg + q * o[i]) / (units + q)
         units += q
         lots += 1
@@ -103,6 +109,9 @@ def simulate_positions(prices: pd.DataFrame, buy_signal: pd.Series, g, rules: Po
             if units > 0:
                 if o[i] >= limit:                                   # 寄付で指値を超えた
                     sell_all(i, o[i])
+                    sells = 1
+                elif rules.max_hold_days is not None and i - trade["_entry_i"] >= rules.max_hold_days:
+                    sell_all(i, o[i])                               # 保有期限（変種のみ）: 寄付で全口
                     sells = 1
                 else:
                     if np.isfinite(last_close) and last_close <= avg * (1 - rules.add_on_drop) and lots < rules.max_lots:

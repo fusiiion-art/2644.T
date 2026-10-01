@@ -65,6 +65,16 @@ v2:
   phase4_min_trades_per_year: 20
   # 方向 C（2026-10-01）: 運用ルールの含み損リスクの測定。ルールは変えない
   risk_scenario_drops: [0.1, 0.3, 0.5, 0.7]   # 建値からの下落率のシナリオ（買い増しは届いた分だけ約定）
+  position_max_hold_days: null          # 現行ルールは保有期限なし。変種でだけ使う（寄付で全口売り）
+  # ルールの変種（一覧表を作るだけで、最良は選ばない。ユーザーが許容額で選ぶ）。g は phase4_baseline_g
+  risk_variant_max_lots: [1, 2, 3]
+  risk_variant_max_hold_days: [null, 120, 245]
+  # ブロック・ブートストラップ（開発期間の 2644 の日次 OHLC 比を並べ替えた架空の値動き）
+  risk_bootstrap_paths: 1000
+  risk_bootstrap_days: 1225             # 5年分
+  risk_bootstrap_block_mean: 20         # 平均ブロック長（営業日）
+  risk_bootstrap_drifts: [zero, asis]   # zero = 上昇トレンドを除く、asis = 開発期間のまま
+  risk_bootstrap_seed: 0
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21

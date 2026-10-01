@@ -100,3 +100,43 @@ def test_missing_session_is_skipped():
 def test_rules_from_config():
     r = PositionRules.from_config()
     assert (r.lot_units, r.max_units, r.add_on_drop, r.round_trip_cost, r.capital_jpy) == (100, 300, 0.04, 0.001, 1_500_000)
+
+
+def test_max_hold_days_sells_all_at_open_and_skips_add_on():
+    """保有期限（方向 C の変種）: 建てた日から数えて max_hold_days 日持ったら、次の朝の寄付で全口売る。
+    その朝は買い増ししない。期限なし（None）が現行ルール。"""
+    rules = PositionRules(lot_units=100, max_units=300, add_on_drop=0.04, round_trip_cost=0.0,
+                          capital_jpy=1_500_000, max_hold_days=3)
+    opens = [100, 99, 98, 90, 91]
+    closes = [99, 98, 95, 90, 91]                     # 3日目の終値 95 ≤ 96 → 期限が無ければ4日目の朝に買い増す
+    p = _prices(opens, highs=opens, lows=closes, closes=closes)
+    daily, trades = simulate_positions(p, _signal(p, [0, 4]), 0.10, rules)
+    first = trades.iloc[0]
+    assert first["exit_date"] == p.index[3] and first["exit_price"] == pytest.approx(90.0)
+    assert first["pnl_jpy"] == pytest.approx(100 * (90 - 100))
+    assert first["lots"] == 1 and daily["buys"].iloc[3] == 0
+    assert daily["units"].iloc[3] == 0
+    assert trades.iloc[1]["entry_date"] == p.index[4]          # 期限で売った後も、次の BUY で建て直す
+
+
+def test_max_hold_days_none_keeps_current_rule():
+    opens = [100, 99, 98, 90, 91]
+    closes = [99, 98, 95, 90, 91]
+    p = _prices(opens, highs=opens, lows=closes, closes=closes)
+    daily, trades = simulate_positions(p, _signal(p, [0]), 0.10, RULES)
+    assert RULES.max_hold_days is None
+    assert daily["units"].iloc[3] == 200 and trades["exit_date"].isna().all()
+
+
+def test_lot_jpy_sizes_each_lot_in_yen():
+    """金額ベースの口数（方向 C のブートストラップ用）: lot_jpy を与えると、1ロット = lot_jpy ÷ 寄付の価格 口。"""
+    rules = PositionRules(lot_units=100, max_units=300, add_on_drop=0.04, round_trip_cost=0.0,
+                          capital_jpy=1_500_000, lot_jpy=10_000.0)
+    opens = [100, 95, 95]
+    closes = [95, 95, 95]
+    p = _prices(opens, highs=opens, lows=closes, closes=closes)
+    daily, trades = simulate_positions(p, _signal(p, [0]), 0.10, rules)
+    assert daily["units"].iloc[0] == pytest.approx(100)
+    assert daily["units"].iloc[1] == pytest.approx(100 + 10_000 / 95)
+    assert daily["invested_jpy"].iloc[1] == pytest.approx(20_000)
+    assert daily["lots"].iloc[1] == 2
