@@ -69,3 +69,14 @@ def test_risk_metrics_per_amount():
 def test_missing_prices_are_rejected():
     with pytest.raises(ValueError):
         simulate_fixed_amount(_p([100, np.nan, 90], [100, 95, 90]), 1000, 2000, 0.002, None)
+
+
+def test_config_records_the_users_fixed_amount_decision():
+    """2026-10-01 のユーザー決定（保有額84万円・買ったまま持つ・1年たっても売らない）が config と食い違わないこと。"""
+    from data.adjust import load_price_config
+    cfg = load_price_config()
+    v2 = cfg["v2"]
+    assert v2["fixed_method"] in v2["fixed_methods"] and v2["fixed_methods"][v2["fixed_method"]] is None
+    assert v2["fixed_wait_action"] == "hold"
+    assert 0 < v2["fixed_amount_jpy"] <= cfg["capital_jpy"]
+    assert v2["fixed_amount_jpy"] >= v2["fixed_loss_limit_jpy"]       # 限界を超える確率は0ではない（5%）ことを明示的に選んだ

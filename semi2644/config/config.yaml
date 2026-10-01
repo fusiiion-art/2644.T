@@ -81,6 +81,10 @@ v2:
   fixed_methods: {hold: null, monthly: 21}   # 買ったまま持つ / 21営業日ごとの寄付で金額に戻す
   fixed_rolling_start_step: 5           # 実データで開始日をずらす間隔（営業日）
   fixed_rolling_min_days: 245           # 開始日から開発期間の終わりまで最低これだけ残る日だけ使う
+  # 運用の決定（2026-10-01 ユーザー決定。research/trial_log/2026-10-01_fixed_amount.md）
+  fixed_amount_jpy: 840000              # 保有額。トレンドなしの架空の値動きで、5年以内に損が限界を超える割合は5%
+  fixed_method: hold                    # 買ったまま持つ（買い足さない・売らない）
+  fixed_wait_action: hold               # 1年たって買値を下回っていても売らない（放置）。fixed_wait_limit_days より優先
   # 既存パイプラインの再学習つきウォークフォワード（監査 G-9）
   wf_min_train_rows: 252
   wf_refit_every_rows: 21
